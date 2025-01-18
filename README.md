@@ -34,3 +34,9 @@ EmpowerVote is a comprehensive voting system application designed to provide a s
    git clone https://github.com/yourusername/EmpowerVote.git
    cd EmpowerVote
    ```
+
+## Project Structure
+- **docs:** Contains the user guide and test guide.
+- **src:** All code for the project.
+- **test:** Contains the test cases.
+- **resource:** Contains the user data and current votes.
