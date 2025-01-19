@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 public class HandleData {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static String startupFileName;
 
     // Public nested class representing a User
