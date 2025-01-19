@@ -13,7 +13,8 @@ import java.util.Objects;
 
 public class HandleData {
     private static final boolean DEBUG = false;
-    private static String startupFileName;
+    private static String startupUserFilename;
+    private static String startupVoteFilename;
 
     // Public nested class representing a User
     public static class User {
@@ -39,6 +40,23 @@ public class HandleData {
         }
     } // End of User class
 
+    // Public nested class representing a Candidate
+    public static class Candidate {
+        String name;
+        String position;
+        int votes;
+
+        public Candidate(String name, String position, int votes) {
+            this.name = name;
+            this.position = position;
+            this.votes = votes;
+            if (DEBUG) {
+                System.out.printf("New Candidate: %n\tName: %s%n\tPosition: %s%n\tVotes: %d%n",
+                        name, position, votes);
+            }
+        }
+    } // End of Candidates class
+
     // Public enum for login status
     public enum LoginStatus {
         AUTHENTICATED_USER,
@@ -62,15 +80,27 @@ public class HandleData {
             return StartupStatus.FAILURE;
         } else {
             users = loadedUsers;
-            startupFileName = filePath;
+            startupUserFilename = filePath;
             return StartupStatus.SUCCESS;
         }
     } // End of serverStartup method
 
+    // Public method to load current votes
+    public static StartupStatus voteStartup(String filePath) {
+        LinkedList<Candidate> currentVotes = loadAllVotes(filePath);
+        if (currentVotes.isEmpty()) {
+            return StartupStatus.FAILURE;
+        } else {
+            candidates = currentVotes;
+            startupVoteFilename = filePath;
+            return StartupStatus.SUCCESS;
+        }
+    } // End of printVotes method
+
     // Public method to authenticate a user
     public static LoginStatus authenticateUser(String username, String password) {
         for (User user : users) {
-//          // Check if the user exists and the hashed password matches
+            // Check if the user exists and the hashed password matches
             String passwordHash = getPasswordHash(password);
 
             // Check if the user exists and the password matches
@@ -94,6 +124,30 @@ public class HandleData {
         }
         return LoginStatus.INVALID_CREDENTIALS;
     } // End of authenticateUser method
+
+    // Public method to log out a user
+    public static void logoutUser(User user) {
+            user.loggedIn = false;
+    } // End of logoutUser method
+
+    // Public method to log out all users
+    public static void logoutAllUsers() {
+        for (User user : users) {
+            logoutUser(user);
+        }
+    } // End of logoutAllUsers method
+
+    // Public method to add a new user
+    public static boolean addUser(String username, String password, int userLevel) {
+        String passwordHash = getPasswordHash(password);
+        User newUser = new User(username, passwordHash, userLevel, false, false);
+        if (users.contains(newUser)) {
+            return false;
+        }
+        users.add(newUser);
+
+        return true;
+    } // End of addUser method
 
     // Private method to get the password hash
     private static String getPasswordHash(String password) {
@@ -126,11 +180,21 @@ public class HandleData {
         for (User user : users) {
             user.loggedIn = false;
         }
-        saveUserData(startupFileName + "_bck");
+        saveUserData(startupUserFilename + "_bck");
+        saveVoteData(startupVoteFilename + "_bck");
     } // End of serverShutdown method
+
+    // Public method to print votes
+    public static void printVotes() {
+        for (Candidate candidate : candidates) {
+            System.out.printf("Candidate: %s%nPosition: %s%nVotes: %d%n%n",
+                    candidate.name, candidate.position, candidate.votes);
+        }
+    } // End of printVotes method
 
     // Private static list to store users
     private static LinkedList<User> users = new LinkedList<>();
+    private static LinkedList<Candidate> candidates = new LinkedList<>();
 
     // Private method to load user data from a file
     private static LinkedList<User> loadUserData(String filePath) {
@@ -195,10 +259,70 @@ public class HandleData {
         return users;
     } // End of loadUserData method
 
+    // Private method to load vote data from a file
+    private static LinkedList<Candidate> loadVoteData(String filePath) {
+        candidates.clear();
+        FileReader serverFile;
+        try {
+            serverFile = new FileReader(filePath);
+        } catch (FileNotFoundException e) {
+            System.out.printf("Error reading file: %s%n", e.getMessage());
+            return candidates;
+        }
+
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(serverFile);
+            String line;
+            boolean firstLine = true;
+            while ((line = bufferedReader.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
+                }
+                String[] data = line.split("\\t");
+
+                if (data.length == 3) {
+                    String name = data[0];
+                    String position = data[1];
+                    int votes = Integer.parseInt(data[2]);
+                    candidates.add(new Candidate(name, position, votes));
+                } else {
+                    throw new NumberFormatException("Invalid candidate data: " + line);
+                }
+            }
+        } catch (IOException e) {
+            System.out.printf("Error reading file: %s%n", e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.printf("Error parsing candidate data: %s%n", e.getMessage());
+        } finally {
+            try {
+                if (bufferedReader != null) {
+                    bufferedReader.close();
+                }
+            } catch (IOException e) {
+                System.out.printf("Error closing BufferedReader: %s%n", e.getMessage());
+            }
+            try {
+                serverFile.close();
+            } catch (IOException e) {
+                System.out.printf("Error closing FileReader: %s%n", e.getMessage());
+            }
+        }
+
+        return candidates;
+    } // End of loadVoteData method
+
     // Private method to load all users from a file
     private static LinkedList<User> loadAllUsers(String filePath) {
         return loadUserData(filePath);
     } // End of loadAllUsers method
+
+    // Private method to load vote data from a file
+    private static LinkedList<Candidate> loadAllVotes(String filePath) {
+        return loadVoteData(filePath);
+    } // End of loadAllVotes method
+
 
     // Private method to save user data to a file
     private static void saveUserData(String filePath) {
@@ -215,14 +339,35 @@ public class HandleData {
         } catch (IOException e) {
             System.out.printf("Error writing file: %s%n", e.getMessage());
         }
+        updateFile(filePath, startupUserFilename);
+    } // End of saveUserData method
+
+    // Private method to save vote data to a file
+    private static void saveVoteData(String filePath) {
+        if (DEBUG) {
+            System.out.printf("Saving vote data to: %s%n", filePath);
+        }
+
+        try (FileWriter writer = new FileWriter(filePath)) {
+            writer.write("Name\tPosition\tVotes\n");
+            for (Candidate candidate : candidates) {
+                writer.write(candidate.name + "\t" + candidate.position + "\t" + candidate.votes + "\n");
+            }
+        } catch (IOException e) {
+            System.out.printf("Error writing file: %s%n", e.getMessage());
+        }
+        updateFile(filePath, startupVoteFilename);
+    } // End of saveVoteData method
+
+    private static void updateFile(String sourcePath, String destinationPath) {
         try {
             // Since the backup succeeded, we can now replace the original file
-            Path source = Paths.get(filePath);
-            Path target = Paths.get(startupFileName);
+            Path source = Paths.get(sourcePath);
+            Path target = Paths.get(destinationPath);
             StandardCopyOption copyOption = StandardCopyOption.REPLACE_EXISTING;
             Files.move(source, target, copyOption);
         } catch (IOException e) {
             System.out.printf("Error moving file: %s%n", e.getMessage());
         }
-    } // End of saveUserData method
+    } // End of updateFile method
 } // End of HandleData class
