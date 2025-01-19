@@ -5,7 +5,7 @@ The `src` folder contains all the source code for the EmpowerVote project. This 
 
 ## Files
 
-### EmpowerVote.java
+### EmpowerVoteStartup.java
 This is the main class for the Spring Boot application. It contains the `main` method that starts the application.
 
 ### UserInterface.java
@@ -18,7 +18,8 @@ This class handles the admin functionality, including viewing voting results and
 This class handles the login functionality, including validating user credentials and managing user sessions.
 
 ### HandleData.java
-This service class handles data-related operations, including finding users, saving users, and securing passwords.
+This service class handles data-related operations, including finding users, saving users, and securing passwords. It also includes methods for server startup and shutdown, user authentication, voting, and data persistence.
 
-### ValidateUser.java
-This class is responsible for validating the username and password provided by the user. It ensures that the credentials match the stored user data and handles any authentication-related logic. The return value is used to call the proper user interface.
+## UML Diagram
+
+![alt text](uml.png)
