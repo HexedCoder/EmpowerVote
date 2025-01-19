@@ -19,3 +19,6 @@ This class handles the login functionality, including validating user credential
 
 ### HandleData.java
 This service class handles data-related operations, including finding users, saving users, and securing passwords.
+
+### ValidateUser.java
+This class is responsible for validating the username and password provided by the user. It ensures that the credentials match the stored user data and handles any authentication-related logic. The return value is used to call the proper user interface.
