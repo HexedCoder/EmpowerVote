@@ -15,63 +15,9 @@ public class HandleData {
     private static final boolean DEBUG = false;
     private static String startupUserFilename;
     private static String startupVoteFilename;
-
-    // Public nested class representing a User
-    public static class User {
-        String name;
-        String password;
-        int userLevel;
-        boolean userVoted;
-        boolean loggedIn;
-
-        public User(String name, String password, int userLevel, boolean voted, boolean loggedIn) {
-            this.name = name;
-            this.password = password;
-            this.userLevel = userLevel;
-            this.userVoted = voted;
-            this.loggedIn = loggedIn;
-            if (DEBUG) {
-                System.out.printf("New User: %n\tName: %s%n\tPassword: %s%n\tRole: %s%n\tLogged In: %b%n",
-                        name, password, (userLevel == 0 ? "User" : "Admin"), loggedIn);
-                if (userLevel == 0) {
-                    System.out.printf("\tVoted: %b%n", voted);
-                }
-            }
-        }
-    } // End of User class
-
-    // Public nested class representing a Candidate
-    public static class Candidate {
-        String name;
-        String position;
-        int votes;
-
-        public Candidate(String name, String position, int votes) {
-            this.name = name;
-            this.position = position;
-            this.votes = votes;
-            if (DEBUG) {
-                System.out.printf("New Candidate: %n\tName: %s%n\tPosition: %s%n\tVotes: %d%n",
-                        name, position, votes);
-            }
-        }
-    } // End of Candidates class
-
-    // Public enum for login status
-    public enum LoginStatus {
-        AUTHENTICATED_USER,
-        AUTHENTICATED_ADMIN,
-        INVALID_CREDENTIALS,
-        ALREADY_LOGGED_IN,
-        ALREADY_VOTED,
-        FAILURE
-    } // End of LoginStatus enum
-
-    // Public enum for startup status
-    public enum StartupStatus {
-        SUCCESS,
-        FAILURE
-    } // End of StartupStatus enum
+    // Private static list to store users
+    private static LinkedList<User> users = new LinkedList<>();
+    private static LinkedList<Candidate> candidates = new LinkedList<>();
 
     // Public method to handle server startup
     public static StartupStatus serverStartup(String filePath) {
@@ -125,15 +71,42 @@ public class HandleData {
         return LoginStatus.INVALID_CREDENTIALS;
     } // End of authenticateUser method
 
+    // Public method to vote for a user
+    public static boolean voteForUser(String username, String candidateName) {
+        for (User user : users) {
+            if (user.name.equals(username)) {
+                if (user.userVoted) {
+                    return false;
+                }
+            }
+        }
+        for (Candidate candidate : candidates) {
+            if (candidate.name.equals(candidateName)) {
+                candidate.votes++;
+                for (User user : users) {
+                    if (user.name.equals(username)) {
+                        user.userVoted = true;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    } // End of voteForUser method
+
     // Public method to log out a user
-    public static void logoutUser(User user) {
-            user.loggedIn = false;
+    public static void logoutUser(String username) {
+        for (User user : users) {
+            if (user.name.equals(username)) {
+                user.loggedIn = false;
+            }
+        }
     } // End of logoutUser method
 
     // Public method to log out all users
     public static void logoutAllUsers() {
         for (User user : users) {
-            logoutUser(user);
+            user.loggedIn = false;
         }
     } // End of logoutAllUsers method
 
@@ -156,9 +129,10 @@ public class HandleData {
             byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
-            hexString.append(hex);
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1)
+                    hexString.append('0');
+                hexString.append(hex);
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
@@ -192,9 +166,10 @@ public class HandleData {
         }
     } // End of printVotes method
 
-    // Private static list to store users
-    private static LinkedList<User> users = new LinkedList<>();
-    private static LinkedList<Candidate> candidates = new LinkedList<>();
+    // Public method to print candidates
+    public static LinkedList<Candidate> getCandidates() {
+        return candidates;
+    } // End of printCandidates method
 
     // Private method to load user data from a file
     private static LinkedList<User> loadUserData(String filePath) {
@@ -323,7 +298,6 @@ public class HandleData {
         return loadVoteData(filePath);
     } // End of loadAllVotes method
 
-
     // Private method to save user data to a file
     private static void saveUserData(String filePath) {
         if (DEBUG) {
@@ -370,4 +344,61 @@ public class HandleData {
             System.out.printf("Error moving file: %s%n", e.getMessage());
         }
     } // End of updateFile method
+
+    // Public enum for login status
+    public enum LoginStatus {
+        AUTHENTICATED_USER,
+        AUTHENTICATED_ADMIN,
+        INVALID_CREDENTIALS,
+        ALREADY_LOGGED_IN,
+        ALREADY_VOTED,
+        FAILURE
+    } // End of LoginStatus enum
+
+    // Public enum for startup status
+    public enum StartupStatus {
+        SUCCESS,
+        FAILURE
+    } // End of StartupStatus enum
+
+    // Public nested class representing a User
+    public static class User {
+        String name;
+        String password;
+        int userLevel;
+        boolean userVoted;
+        boolean loggedIn;
+
+        public User(String name, String password, int userLevel, boolean voted, boolean loggedIn) {
+            this.name = name;
+            this.password = password;
+            this.userLevel = userLevel;
+            this.userVoted = voted;
+            this.loggedIn = loggedIn;
+            if (DEBUG) {
+                System.out.printf("New User: %n\tName: %s%n\tPassword: %s%n\tRole: %s%n\tLogged In: %b%n",
+                        name, password, (userLevel == 0 ? "User" : "Admin"), loggedIn);
+                if (userLevel == 0) {
+                    System.out.printf("\tVoted: %b%n", voted);
+                }
+            }
+        }
+    } // End of User class
+
+    // Public nested class representing a Candidate
+    public static class Candidate {
+        String name;
+        String position;
+        int votes;
+
+        public Candidate(String name, String position, int votes) {
+            this.name = name;
+            this.position = position;
+            this.votes = votes;
+            if (DEBUG) {
+                System.out.printf("New Candidate: %n\tName: %s%n\tPosition: %s%n\tVotes: %d%n",
+                        name, position, votes);
+            }
+        }
+    } // End of Candidates class
 } // End of HandleData class

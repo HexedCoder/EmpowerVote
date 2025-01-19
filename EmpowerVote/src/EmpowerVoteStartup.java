@@ -1,5 +1,6 @@
 package src;
 
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class EmpowerVoteStartup {
@@ -35,16 +36,48 @@ public class EmpowerVoteStartup {
 
             HandleData.LoginStatus loginStatus = HandleData.authenticateUser(username, password);
 
+            String option;
             switch (loginStatus) {
                 case AUTHENTICATED_USER:
                     System.out.println("User logged in.");
+                    System.out.println("1: Vote\n2: Logout");
+
+                    option = scanner.nextLine();
+                    switch (option) {
+                        case "1" -> {
+                            LinkedList<HandleData.Candidate> candidates = HandleData.getCandidates();
+                            String currentPosition = "";
+                            scanner = new Scanner(System.in);
+
+                            for (HandleData.Candidate candidate : candidates) {
+                                if (!candidate.position.equals(currentPosition)) {
+                                    currentPosition = candidate.position;
+                                    System.out.printf("\nPosition: %s%n", currentPosition);
+                                }
+                                System.out.printf("\tCandidate: %s%n", candidate.name);
+                            }
+
+                            System.out.println("Enter the name of the candidate you want to vote for:");
+                            String chosenCandidate = scanner.nextLine();
+
+                            boolean voteResult = HandleData.voteForUser(username, chosenCandidate);
+                            if (voteResult) {
+                                System.out.println("Vote successful.");
+                            } else {
+                                System.out.println("Vote failed.");
+                            }
+                        }
+                        case "2" -> HandleData.logoutUser(username);
+                        default -> System.out.println("Invalid option.");
+                    }
+
                     HandleData.markUserVoted(username);
                     break;
                 case AUTHENTICATED_ADMIN:
                     System.out.println("Admin logged in.\n");
                     System.out.println("1: Print Votes\n2: Register User\n3: Logout Users");
                     System.out.println("Please make a selection:");
-                    String option = scanner.nextLine();
+                    option = scanner.nextLine();
 
                     switch (option) {
                         case "1" -> HandleData.printVotes();
@@ -98,7 +131,10 @@ public class EmpowerVoteStartup {
                     System.out.println("Unknown failure.");
                     serverError = true;
                     break;
+
             }
+            HandleData.logoutUser(username);
+
         } // End of server authentication loop
 
         if (!serverError) {
