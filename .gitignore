@@ -1,6 +1,10 @@
 # IDE Files
 *.idea*
-.iml
+*.iml
 
 # Output folder
-out/*
+out/
+*.class
+
+# Test files
+*.tsv
