@@ -20,6 +20,10 @@ This class handles the login functionality, including validating user credential
 ### HandleData.java
 This service class handles data-related operations, including finding users, saving users, and securing passwords. It also includes methods for server startup and shutdown, user authentication, voting, and data persistence.
 
-## UML Diagram
+## Simple UML Diagram
+
+![alt text](Empower.png)
+
+## Complete UML Diagram
 
 ![alt text](uml.png)
