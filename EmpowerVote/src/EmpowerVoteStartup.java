@@ -1,7 +1,6 @@
 package src;
 
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.util.*;
 
 public class EmpowerVoteStartup {
     public static void main(String[] args) {
@@ -9,137 +8,157 @@ public class EmpowerVoteStartup {
         String voteStatusPath = "resource/VoteStatus.tsv";
         boolean serverError = false;
 
-        if (HandleData.serverStartup(userDataPath) == HandleData.StartupStatus.FAILURE) {
-            System.out.println("Startup failed.");
-            System.exit(1);
+        // Initialize users
+        HandleData.StartupStatus startupStatus = HandleData.serverStartup(userDataPath);
+        if (startupStatus != HandleData.StartupStatus.SUCCESS) {
+            System.out.println("Failed to load users.");
+            serverError = true;
         }
 
-        if (HandleData.voteStartup(voteStatusPath) == HandleData.StartupStatus.FAILURE) {
-            System.out.println("Startup failed.");
-            System.exit(1);
+        // Initialize votes
+        startupStatus = HandleData.voteStartup(voteStatusPath);
+        if (startupStatus != HandleData.StartupStatus.SUCCESS) {
+            System.out.println("Failed to load votes.");
+            serverError = true;
         }
 
-        System.out.println("Hello, EmpowerVote!");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Welcome to EmpowerVote!\n");
 
-        while (true) {
-            Scanner scanner = new Scanner(System.in);
+        while (!serverError) {
+            System.out.println("""
+            Select an option:
+            1: Login
+            2: Register User
+            3: Exit""");
 
-            System.out.println("Enter your username (or 'exit' to quit):");
-            String username = scanner.nextLine();
+            String choice = scanner.nextLine();
+            System.out.println();
 
-            if (username.equals("exit")) {
-                break;
-            }
-
-            System.out.println("Enter your password:");
-            String password = scanner.nextLine();
-
-            HandleData.LoginStatus loginStatus = HandleData.authenticateUser(username, password);
-
-            String option;
-            switch (loginStatus) {
-                case AUTHENTICATED_USER:
-                    System.out.println("User logged in.");
-                    System.out.println("1: Vote\n2: Logout");
-
-                    option = scanner.nextLine();
-                    switch (option) {
-                        case "1" -> {
-                            LinkedList<HandleData.Candidate> candidates = HandleData.getCandidates();
-                            String currentPosition = "";
-                            scanner = new Scanner(System.in);
-
-                            for (HandleData.Candidate candidate : candidates) {
-                                if (!candidate.position.equals(currentPosition)) {
-                                    currentPosition = candidate.position;
-                                    System.out.printf("\nPosition: %s%n", currentPosition);
-                                }
-                                System.out.printf("\tCandidate: %s%n", candidate.name);
-                            }
-
-                            System.out.println("Enter the name of the candidate you want to vote for:");
-                            String chosenCandidate = scanner.nextLine();
-
-                            boolean voteResult = HandleData.voteForUser(username, chosenCandidate);
-                            if (voteResult) {
-                                System.out.println("Vote successful.");
-                            } else {
-                                System.out.println("Vote failed.");
-                            }
-                        }
-                        case "2" -> HandleData.logoutUser(username);
-                        default -> System.out.println("Invalid option.");
-                    }
-
-                    HandleData.markUserVoted(username);
-                    break;
-                case AUTHENTICATED_ADMIN:
-                    System.out.println("Admin logged in.\n");
-                    System.out.println("1: Print Votes\n2: Register User\n3: Logout Users");
-                    System.out.println("Please make a selection:");
-                    option = scanner.nextLine();
-
-                    switch (option) {
-                        case "1" -> HandleData.printVotes();
-                        case "2" -> {
-                            System.out.println("Enter the new user's name:");
-                            String newUser = scanner.nextLine();
-
-                            System.out.println("Enter the new user's password:");
-                            String newPassword = scanner.nextLine();
-
-                            // Ensure valid username and password provided
-                            if (newUser.isEmpty() || newPassword.isEmpty()) {
-                                System.out.println("Invalid username or password.");
-                                continue;
-                            }
-
-                            System.out.println("Enter user type (0: User 1: Admin):");
-                            String userType = scanner.nextLine();
-
-                            int userLevel;
-                            if (userType.equals("0")) {
-                                userLevel = 0;
-                            } else if (userType.equals("1")) {
-                                userLevel = 1;
-                            } else {
-                                System.out.println("Invalid user type.");
-                                continue;
-                            }
-
-                            boolean result = HandleData.addUser(newUser, newPassword, userLevel);
-                            if (result) {
-                                System.out.println("User added.");
-                            } else {
-                                System.out.println("User Exists");
-                            }
-                        }
-                        case "3" -> HandleData.logoutAllUsers();
-                        default -> System.out.println("Invalid option.");
-                    }
-                    break;
-                case INVALID_CREDENTIALS:
-                    System.out.println("Invalid credentials.");
-                    break;
-                case ALREADY_LOGGED_IN:
-                    System.out.println("User already logged in.");
-                    break;
-                case ALREADY_VOTED:
-                    System.out.println("User already voted.");
-                    break;
-                default:
-                    System.out.println("Unknown failure.");
+            switch (choice) {
+                case "1" -> handleLogin(scanner);
+                case "2" -> handleRegistration(scanner, false);
+                case "3" -> {
+                    HandleData.serverShutdown();
                     serverError = true;
-                    break;
+                }
+                default -> System.out.println("Invalid option. Please try again.");
+            } // switch
+        } // while
+        System.out.println("Exiting program. Goodbye!");
+    } // End of main
 
-            }
-            HandleData.logoutUser(username);
+    private static void handleLogin(Scanner scanner) {
+        System.out.println("Enter your username:");
+        String username = scanner.nextLine();
 
-        } // End of server authentication loop
+        System.out.println("Enter your password:");
+        String password = scanner.nextLine();
 
-        if (!serverError) {
-            HandleData.serverShutdown();
+        System.out.println();
+        HandleData.LoginStatus loginStatus = HandleData.authenticateUser(username, password);
+
+        switch (loginStatus) {
+            case AUTHENTICATED_USER -> handleUserActions(scanner, username);
+            case AUTHENTICATED_ADMIN -> handleAdminActions(scanner);
+            case INVALID_CREDENTIALS -> System.out.println("\nInvalid credentials.");
+            case ALREADY_LOGGED_IN -> System.out.println("\nUser already logged in.");
+            case ALREADY_VOTED -> System.out.println("\nUser already voted.");
+            default -> System.out.println("\nUnknown failure.");
+        }
+    } // End of handleLogin
+
+    private static void handleRegistration(Scanner scanner, boolean isAdmin) {
+        int UserLevel = 0; // Default to user
+        System.out.printf("Enter the new %s's name: ", isAdmin ? "admin" : "user");
+        String newUser = scanner.nextLine();
+
+        System.out.printf("Enter the new %s's password: ", isAdmin ? "admin" : "user");
+        String newPassword = scanner.nextLine();
+
+        System.out.println();
+
+        if (newUser.isEmpty() || newPassword.isEmpty()) {
+            System.out.println("Invalid username or password.");
+            return;
         }
 
-    } // End of main method
-} // End of EmpowerVoteStartup class
+        if (isAdmin) {
+            UserLevel = 1; // Set to admin if needed
+        }
+
+        boolean result = HandleData.addUser(newUser, newPassword, UserLevel, new LinkedList<>());
+        if (result) {
+            System.out.printf("%s registration successful.\n", isAdmin ? "Admin" : "User");
+        } else {
+            System.out.println("Entry already exists.");
+        }
+    } // End of handleRegistration
+
+    private static void handleUserActions(Scanner scanner, String username) {
+        System.out.println("""
+        User logged in.
+        1: Vote
+        2: Logout""");
+
+        String option = scanner.nextLine();
+        switch (option) {
+            case "1" -> {
+                printVotes(false);
+
+                System.out.println("Enter the name of the candidate you want to vote for: ");
+                String chosenCandidate = scanner.nextLine();
+
+                boolean voteResult = HandleData.voteForUser(username, chosenCandidate);
+                if (voteResult) {
+                    System.out.println("Vote successful.");
+                } else {
+                    System.out.println("Vote failed.");
+                }
+            }
+            case "2" -> HandleData.logoutUser(username);
+            default -> System.out.println("Invalid option.");
+        }
+    } // End of handleUserActions
+
+    private static void printVotes(boolean isAdmin) {
+        Map<String, HandleData.Candidate> candidates = HandleData.getVotes(isAdmin);
+
+        // Collect and sort candidates by position and name
+        List<HandleData.Candidate> sortedCandidates = new ArrayList<>(candidates.values());
+        sortedCandidates.sort(Comparator.comparing((HandleData.Candidate c) -> c.position)
+                .thenComparing(c -> c.name));
+
+        String currentPosition = "";
+
+        for (HandleData.Candidate candidate : sortedCandidates) {
+            if (!candidate.position.equals(currentPosition)) {
+                currentPosition = candidate.position;
+                System.out.printf("\nPosition: %s%n", currentPosition);
+            }
+
+            if (isAdmin) {
+                // Print candidate and votes
+                System.out.printf("\tCandidate: %s\tVotes: %d%n", candidate.name, candidate.votes);
+            } else {
+                System.out.printf("\tCandidate: %s%n", candidate.name);
+            }
+        }
+    } // End of printVotes
+
+    private static void handleAdminActions(Scanner scanner) {
+        System.out.println("""
+        Admin logged in.
+        1: Print Votes
+        2: Register Admin
+        3: Logout All Users""");
+
+        String option = scanner.nextLine();
+        switch (option) {
+            case "1" -> printVotes(true);
+            case "2" -> handleRegistration(scanner, true);
+            case "3" -> HandleData.logoutAllUsers();
+            default -> System.out.println("Invalid option.");
+        }
+    } // End of handleAdminActions
+} // End of EmpowerVoteStartup
