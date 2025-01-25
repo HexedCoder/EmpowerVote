@@ -40,3 +40,9 @@ EmpowerVote is a comprehensive voting system application designed to provide a s
 - **src:** All code for the project.
 - **test:** Contains the test cases.
 - **resource:** Contains the user data and current votes.
+
+## UML Diagram
+![img.png](img.png)
+
+## Sequence Diagram
+![sequence.png](sequence.png)

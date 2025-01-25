@@ -5,8 +5,8 @@
 The `UserData.tsv` file contains important information about authorized users. The file includes the following columns:
 
 1. **Password**: The password for the user.
-3. **Level**: The user's access level (either `admin` or `user`).
-2. **Voted**: A flag indicating whether the user has voted (1 for yes, 0 for no). Always 0 for admin.
+2. **Level**: The user's access level (either `admin` or `user`).
+3. **Voted**: A flag indicating whether the user has voted (1 for yes, 0 for no). Always 0 for admin.
 
 ## VoteStatus.tsv
 
