@@ -1,4 +1,4 @@
-package src;
+package src.main.java.support;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -7,6 +7,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class HandleData {
+    public enum LoginStatus {
+        AUTHENTICATED_USER, AUTHENTICATED_ADMIN, INVALID_CREDENTIALS, ALREADY_LOGGED_IN, ALREADY_VOTED, FAILURE
+    } // End of LoginStatus enum
 
     private static final boolean DEBUG = false;
     private static String startupUserFilename;
@@ -80,13 +83,12 @@ public class HandleData {
         userMap.values().forEach(user -> user.loggedIn = false);
     } // End of logoutAllUsers
 
-    public static boolean addUser(String username, String password, int userLevel, List<User> users) {
+    public static boolean addUser(String username, String password, int userLevel) {
         if (userMap.containsKey(username)) return false;
 
         String passwordHash = getPasswordHash(password);
         User newUser = new User(username, passwordHash, userLevel, false, false);
 
-        users.add(newUser);
         userMap.put(username, newUser);
         return true;
     } // End of addUser
@@ -248,10 +250,6 @@ public class HandleData {
         }
         return true;
     } // End of saveVoteData
-
-    public enum LoginStatus {
-        AUTHENTICATED_USER, AUTHENTICATED_ADMIN, INVALID_CREDENTIALS, ALREADY_LOGGED_IN, ALREADY_VOTED, FAILURE
-    } // End of LoginStatus enum
 
     public enum StartupStatus {
         SUCCESS, FAILURE

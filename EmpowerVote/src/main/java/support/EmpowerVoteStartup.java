@@ -1,6 +1,8 @@
-package src;
+package src.main.java.support;
 
 import java.util.*;
+
+import static src.main.java.main.Main.startup;
 
 public class EmpowerVoteStartup {
     public static void main(String[] args) {
@@ -22,50 +24,17 @@ public class EmpowerVoteStartup {
             serverError = true;
         }
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to EmpowerVote!\n");
+        if (serverError) {
+            System.out.println("Server startup failed.");
+            return;
+        }
 
-        while (!serverError) {
-            System.out.println("""
-            Select an option:
-            1: Login
-            2: Register User
-            3: Exit""");
-
-            String choice = scanner.nextLine();
-            System.out.println();
-
-            switch (choice) {
-                case "1" -> handleLogin(scanner);
-                case "2" -> handleRegistration(scanner, false);
-                case "3" -> {
-                    HandleData.serverShutdown();
-                    serverError = true;
-                }
-                default -> System.out.println("Invalid option. Please try again.");
-            } // switch
-        } // while
-        System.out.println("Exiting program. Goodbye!");
+        // Start the login GUI
+        startup();
     } // End of main
 
-    private static void handleLogin(Scanner scanner) {
-        System.out.println("Enter your username:");
-        String username = scanner.nextLine();
-
-        System.out.println("Enter your password:");
-        String password = scanner.nextLine();
-
-        System.out.println();
-        HandleData.LoginStatus loginStatus = HandleData.authenticateUser(username, password);
-
-        switch (loginStatus) {
-            case AUTHENTICATED_USER -> handleUserActions(scanner, username);
-            case AUTHENTICATED_ADMIN -> handleAdminActions(scanner);
-            case INVALID_CREDENTIALS -> System.out.println("\nInvalid credentials.");
-            case ALREADY_LOGGED_IN -> System.out.println("\nUser already logged in.");
-            case ALREADY_VOTED -> System.out.println("\nUser already voted.");
-            default -> System.out.println("\nUnknown failure.");
-        }
+    public static HandleData.LoginStatus handleLogin(String username, String password) {
+        return HandleData.authenticateUser(username, password);
     } // End of handleLogin
 
     private static void handleRegistration(Scanner scanner, boolean isAdmin) {
@@ -87,39 +56,13 @@ public class EmpowerVoteStartup {
             UserLevel = 1; // Set to admin if needed
         }
 
-        boolean result = HandleData.addUser(newUser, newPassword, UserLevel, new LinkedList<>());
+        boolean result = HandleData.addUser(newUser, newPassword, UserLevel);
         if (result) {
             System.out.printf("%s registration successful.\n", isAdmin ? "Admin" : "User");
         } else {
             System.out.println("Entry already exists.");
         }
     } // End of handleRegistration
-
-    private static void handleUserActions(Scanner scanner, String username) {
-        System.out.println("""
-        User logged in.
-        1: Vote
-        2: Logout""");
-
-        String option = scanner.nextLine();
-        switch (option) {
-            case "1" -> {
-                printVotes(false);
-
-                System.out.println("Enter the name of the candidate you want to vote for: ");
-                String chosenCandidate = scanner.nextLine();
-
-                boolean voteResult = HandleData.voteForUser(username, chosenCandidate);
-                if (voteResult) {
-                    System.out.println("Vote successful.");
-                } else {
-                    System.out.println("Vote failed.");
-                }
-            }
-            case "2" -> HandleData.logoutUser(username);
-            default -> System.out.println("Invalid option.");
-        }
-    } // End of handleUserActions
 
     private static void printVotes(boolean isAdmin) {
         Map<String, HandleData.Candidate> candidates = HandleData.getVotes(isAdmin);
