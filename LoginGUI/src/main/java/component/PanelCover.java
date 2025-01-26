@@ -95,6 +95,18 @@ public class PanelCover extends javax.swing.JPanel {
         add(comboBox, "w 30%, h 8");
         //=================================================
         //-------------------------------------------------
+        //-------------------------------------------------
+        // Exit button
+        //==================================================
+        JButton cmdExit = new JButton("Exit");
+        cmdExit.setForeground(new Color(100,100,100));
+        cmdExit.setFont(new Font("sansserif", 1, 12));
+        cmdExit.setContentAreaFilled(false);
+        cmdExit.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        cmdExit.addActionListener(e -> System.exit(0));
+        add(cmdExit);
+        //=================================================
+        //-------------------------------------------------
     }
     
     @SuppressWarnings("unchecked")
