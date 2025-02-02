@@ -22,6 +22,7 @@ public class EmpowerVoteStartup {
             serverError = true;
         }
 
+        // Main loop to test multiple logins
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to EmpowerVote!\n");
 
@@ -35,6 +36,7 @@ public class EmpowerVoteStartup {
             String choice = scanner.nextLine();
             System.out.println();
 
+            // Handle user choice
             switch (choice) {
                 case "1" -> handleLogin(scanner);
                 case "2" -> handleRegistration(scanner, false);
@@ -56,8 +58,10 @@ public class EmpowerVoteStartup {
         String password = scanner.nextLine();
 
         System.out.println();
+        // Authenticate user with provided credentials
         HandleData.LoginStatus loginStatus = HandleData.authenticateUser(username, password);
 
+        // Handle user actions based on login status
         switch (loginStatus) {
             case AUTHENTICATED_USER -> handleUserActions(scanner, username);
             case AUTHENTICATED_ADMIN -> handleAdminActions(scanner);
@@ -78,15 +82,18 @@ public class EmpowerVoteStartup {
 
         System.out.println();
 
+        // Check if username or password is empty
         if (newUser.isEmpty() || newPassword.isEmpty()) {
             System.out.println("Invalid username or password.");
             return;
         }
 
+        // Set user level to admin, if validated
         if (isAdmin) {
             UserLevel = 1; // Set to admin if needed
         }
 
+        // Attempt to add user
         boolean result = HandleData.addUser(newUser, newPassword, UserLevel, new LinkedList<>());
         if (result) {
             System.out.printf("%s registration successful.\n", isAdmin ? "Admin" : "User");
@@ -102,6 +109,8 @@ public class EmpowerVoteStartup {
         2: Logout""");
 
         String option = scanner.nextLine();
+
+        // Handle user actions
         switch (option) {
             case "1" -> {
                 printVotes(false);
@@ -109,6 +118,7 @@ public class EmpowerVoteStartup {
                 System.out.println("Enter the name of the candidate you want to vote for: ");
                 String chosenCandidate = scanner.nextLine();
 
+                // Attempt to vote for candidate
                 boolean voteResult = HandleData.voteForUser(username, chosenCandidate);
                 if (voteResult) {
                     System.out.println("Vote successful.");
@@ -124,13 +134,14 @@ public class EmpowerVoteStartup {
     private static void printVotes(boolean isAdmin) {
         Map<String, HandleData.Candidate> candidates = HandleData.getVotes(isAdmin);
 
-        // Collect and sort candidates by position and name
+        // Collect and sort candidates by position and name in an ArrayList
         List<HandleData.Candidate> sortedCandidates = new ArrayList<>(candidates.values());
         sortedCandidates.sort(Comparator.comparing((HandleData.Candidate c) -> c.position)
                 .thenComparing(c -> c.name));
 
         String currentPosition = "";
 
+        // Print candidates or vote counts
         for (HandleData.Candidate candidate : sortedCandidates) {
             if (!candidate.position.equals(currentPosition)) {
                 currentPosition = candidate.position;
@@ -154,6 +165,8 @@ public class EmpowerVoteStartup {
         3: Logout All Users""");
 
         String option = scanner.nextLine();
+
+        // Handle admin actions
         switch (option) {
             case "1" -> printVotes(true);
             case "2" -> handleRegistration(scanner, true);
