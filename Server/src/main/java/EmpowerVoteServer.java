@@ -1,14 +1,33 @@
 import java.io.*;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.*;
 
 public class EmpowerVoteServer {
-    // Add volatile keyword to ensure visibility of changes to g_server_shutdown
-    private static volatile boolean g_server_shutdown = false;
+    // Add volatile keyword to ensure visibility of changes to gServerShutdown
+    private static volatile boolean gServerShutdown = false;
+
+    // Add DELIMITER constant to separate fields in the input
+    public static final String DELIMITER = ",";
+
+    // Variables for files to parse
+    public static final String USER_DATA_FILE = "resources/UserData.tsv";
+    public static final String VOTE_DATA_FILE = "resources/VoteData.tsv";
+
+    // Data structures to store user and vote data
+    public static final Map<String, HandleData.User> userMap = new HashMap<>();
+    public static final Map<String, HandleData.Candidate> candidateMap = new HashMap<>();
+
+    // Define Mutex for userMap and candidateMap
+    public static final Object userMapMutex = new Object();
 
     public static void main(String[] args) {
         // server variables
         boolean serverError = false;
+        InputStream userDataStream = null;
+        InputStream voteDataStream = null;
 
         // Initialize user variables
         String userIP = "0.0.0.0";
@@ -23,23 +42,23 @@ public class EmpowerVoteServer {
         }
 
         // Initialize to error status
-        HandleData.StartupStatus startupStatus = HandleData.StartupStatus.FAILURE;
+        HandleData.StartupStatus startupStatus;
 
-        // Try to access main.resources inside the JAR
-        InputStream userDataStream = EmpowerVoteServer.class.getResourceAsStream("/UserData.tsv");
-
-        // Set to error status if the file is not found
-        if (userDataStream == null) {
-            System.out.println("Failed to load user file");
+        try {
+            // Try to access the USER_DATA_FILE using getDataInputStream()
+            userDataStream = getDataInputStream(USER_DATA_FILE);
+        } catch (IOException e) {
+            // Handle the error, print the error message and set the server error status
+            System.out.println("Failed to load user file: " + e.getMessage());
             serverError = true;
         }
 
-        // Try to access main.resources inside the JAR
-        InputStream voteStatusStream = EmpowerVoteServer.class.getResourceAsStream("/VoteData.tsv");
-
-        // Set to error status if the file is not found
-        if (voteStatusStream == null) {
-            System.out.println("Failed to load vote file");
+        // Try to access the VOTE_DATA_FILE using getDataInputStream()
+        try {
+            voteDataStream = getDataInputStream(VOTE_DATA_FILE);
+        } catch (IOException e) {
+            // Handle the error, print the error message and set the server error status
+            System.out.println("Failed to load vote file: " + e.getMessage());
             serverError = true;
         }
 
@@ -57,7 +76,7 @@ public class EmpowerVoteServer {
         }
 
         // Initialize votes
-        startupStatus = HandleData.voteStartup(voteStatusStream);
+        startupStatus = HandleData.voteStartup(voteDataStream);
         if (startupStatus != HandleData.StartupStatus.SUCCESS) {
             System.out.println("Failed to load votes.");
             serverError = true;
@@ -76,17 +95,32 @@ public class EmpowerVoteServer {
             System.out.println("Server is running and waiting for client connections on 0.0.0.0:12345...");
             System.out.println("Press CTRL+C to shutdown the server.");
 
+            // Set timeout of 1 second to check for shutdown
+            serverSocket.setSoTimeout(1000);
+
             // Server loop until CTRL+C
-            while (!g_server_shutdown) {
+            while (!gServerShutdown) {
                 try {
+                    // Accept client connection
                     Socket clientSocket = serverSocket.accept();
+                    if (gServerShutdown) {
+                        clientSocket.close();
+                        break;
+                    }
+
+                    // Print client connection
                     System.out.println("New client connected: " + clientSocket.getInetAddress().getHostAddress());
+
+                    // Start a new thread to handle the client
                     new Thread(() -> handleClient(clientSocket)).start();
+                }catch (SocketTimeoutException _) {
+                    // Check for shutdown signal during Timeout
                 } catch (IOException e) {
-                    if (g_server_shutdown) {
+                    if (gServerShutdown) {
                         System.out.println("Server shutting down gracefully...");
                         break;
                     }
+
                     System.err.println("Error accepting client connection: " + e.getMessage());
                 }
             }
@@ -95,17 +129,85 @@ public class EmpowerVoteServer {
         } catch (IOException e) {
             System.err.println("Server encountered an error: " + e.getMessage());
         }
+
+        HandleData.logoutAllUsers();
+        HandleData.serverShutdown();
     } // End of main
 
-    // Add shutdown hook to handle Ctrl+C gracefully
+    /**
+     * This method adds a shutdown hook to handle the server shutdown gracefully.
+     */
     private static void addShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Shutdown signal received. Server shutting down...");
-            g_server_shutdown = true;
+            // Send signal to get off blocking accept() call
+            gServerShutdown = true;
         }));
     } // End of addShutdownHook
 
-    // Handle client connections
+    /**
+     * This method returns the userMap.
+     *
+     * @return The userMap containing user data.
+     */
+    public static Map<String, HandleData.User> getUserMap() {
+        // synchronized block to ensure thread safety
+        synchronized (userMapMutex) {
+            return userMap;
+        }
+    }
+
+    /**
+     * This method returns the candidateMap.
+     *
+     * @return The candidateMap containing candidate data.
+     */
+    public static Map<String, HandleData.Candidate> getCandidateMap() {
+        // synchronized block to ensure thread safety
+        synchronized (userMapMutex) {
+            return candidateMap;
+        }
+    }
+
+    /**
+     * This method adds a user to the userMap.
+     *
+     * @param newUser The user to add to the userMap.
+     */
+    public static void addUserToMap(HandleData.User newUser) {
+        synchronized (userMapMutex) {
+            userMap.put(newUser.name, newUser);
+        }
+    }
+
+    /**
+     * This method retrieves the InputStream from a file located in the directory of the running JAR.
+     *
+     * @param fileName The name of the file to access (e.g., "UserData.tsv")
+     * @return InputStream for reading the file, or null if the file doesn't exist.
+     * @throws IOException if an I/O error occurs while opening the file
+     */
+    public static InputStream getDataInputStream(String fileName) throws IOException {
+        // Get the directory where the JAR is located
+        String jarDirectory = System.getProperty("user.dir");
+
+        // Construct the path to the file
+        File file = new File(jarDirectory, fileName);
+
+        // Check if file exists
+        if (!file.exists()) {
+            throw new FileNotFoundException("File not found: " + file.getAbsolutePath());
+        }
+
+        // Try to access the file as an InputStream
+        return new FileInputStream(file);
+    } // End of getDataInputStream
+
+    /**
+     * This method handles the client connection.
+     *
+     * @param clientSocket The client socket to handle.
+     */
     private static void handleClient(Socket clientSocket) {
         try (
                 // Initialize input and output streams
@@ -115,12 +217,30 @@ public class EmpowerVoteServer {
             // Read input from client
             while ((inputLine = in.readLine()) != null) {
                 System.out.println("Received: " + inputLine);
+
+                // Process the client input
                 HandleData.LoginStatus response = processClientInput(inputLine, in, out);
+
+                // Print the response to the server
+
+                if (response == HandleData.LoginStatus.LOGOUT_REQUEST) {
+                    continue;
+                }
+
                 System.out.println("Response to the client: " + response);
+
+                // Send the response to the client
                 out.println(response);
 
-                // Exit if the client sends "EXIT"
+                // Exit if the client sends "Exit"
                 if ("EXIT".equalsIgnoreCase(inputLine)) {
+                    handleLogout();
+                    break;
+                }
+
+                // Exit if the client sends "Shut down"
+                if ("SHUT_DOWN".equalsIgnoreCase(inputLine)) {
+                    gServerShutdown = true;
                     break;
                 }
             }
@@ -136,8 +256,16 @@ public class EmpowerVoteServer {
         }
     } // End of handleClient
 
+    /**
+     * This method processes the client input and returns the appropriate response.
+     *
+     * @param input The input received from the client.
+     * @param in    The BufferedReader for reading input from the client.
+     * @param out   The PrintWriter for sending output to the client.
+     * @return The response to the client.
+     */
     private static HandleData.LoginStatus processClientInput(String input, BufferedReader in, PrintWriter out) {
-        String response = "";
+        String response;
         switch (input.toUpperCase()) {
             case "LOGIN":
                 return handleLogin(in);
@@ -160,32 +288,54 @@ public class EmpowerVoteServer {
 
                 // Send the candidates to the client
                 out.println(response);
+                out.println("SUCCESS");
 
                 // Handle the vote from the client
-                return handleVote(in);
+                return HandleData.handleVote(in);
 
             case "LOGOUT":
-                return handleLogout();
+                handleLogout();
+                return HandleData.LoginStatus.LOGOUT_REQUEST;
+            case "LOGOUT_ALL":
+                HandleData.logoutAllUsers();
+                return HandleData.LoginStatus.LOGOUT_REQUEST;
             case "EXIT":
+                return HandleData.LoginStatus.SHUT_DOWN;
+            case "SHUTDOWN":
+                gServerShutdown = true;
                 return HandleData.LoginStatus.SHUT_DOWN;
             default:
                 return HandleData.LoginStatus.UNKNOWN_COMMAND;
         }
     } // End of processClientInput
 
+    /**
+     * This method handles the login process.
+     *
+     * @param in The BufferedReader for reading input from the client.
+     * @return The login status.
+     */
     private static HandleData.LoginStatus handleLogin(BufferedReader in) {
         try {
             String response = in.readLine();
-            String[] parts = response.split(",");
+            String[] parts = response.split(DELIMITER);
 
             System.out.println("Username: " + parts[0] + " Password: " + parts[1]);
             return HandleData.authenticateUser(parts[0], parts[1]);
 
         } catch (IOException e) {
+            System.err.println("Error reading login credentials: " + e.getMessage());
             return HandleData.LoginStatus.FAILURE;
         }
-    }
+    } // End of handleLogin
 
+    /**
+     * This method handles the registration process.
+     *
+     * @param in  The BufferedReader for reading input from the client.
+     * @param out The PrintWriter for sending output to the client.
+     * @return The registration status.
+     */
     private static HandleData.LoginStatus handleRegistration(BufferedReader in, PrintWriter out) {
         try {
             out.println("Enter new username:");
@@ -197,7 +347,7 @@ public class EmpowerVoteServer {
                 return HandleData.LoginStatus.FAILURE;
             }
 
-            boolean result = HandleData.addUser(newUsername, newPassword, 0, new LinkedList<>());
+            boolean result = HandleData.addUser(newUsername, newPassword, 0);
             if (result) {
                 return HandleData.LoginStatus.SUCCESS;
             } else {
@@ -206,8 +356,14 @@ public class EmpowerVoteServer {
         } catch (IOException e) {
             return HandleData.LoginStatus.FAILURE;
         }
-    }
+    } // End of handleRegistration
 
+    /**
+     * This method handles the view votes process.
+     *
+     * @param isAdmin A boolean indicating if the user is an admin.
+     * @return The vote information.
+     */
     private static String handleViewVotes(boolean isAdmin) {
         // Get the candidates from the server
         Map<String, HandleData.Candidate> candidates = HandleData.getVotes(isAdmin);
@@ -226,6 +382,13 @@ public class EmpowerVoteServer {
         return voteInfo.toString();
     } // End of handleViewVotes
 
+    /**
+     * This method constructs a StringBuilder with the vote information.
+     *
+     * @param isAdmin         A boolean indicating if the user is an admin.
+     * @param sortedCandidates A list of sorted candidates.
+     * @return The StringBuilder containing the vote information.
+     */
     private static StringBuilder getStringBuilder(boolean isAdmin, List<HandleData.Candidate> sortedCandidates) {
         StringBuilder voteInfo = new StringBuilder();
         String currentPosition = null;
@@ -241,20 +404,30 @@ public class EmpowerVoteServer {
         return voteInfo;
     } // End of getStringBuilder
 
-    private static HandleData.LoginStatus handleVote(BufferedReader inputBuffer) {
-        try {
-            // Get the chosen candidate from the client
-            String chosenCandidate = inputBuffer.readLine();
-
-            // Return the result of voting for the chosen candidate
-            return HandleData.voteForUser(chosenCandidate);
-        } catch (IOException e) {
-            return HandleData.LoginStatus.FAILURE;
+    /**
+     * This method handles the vote process.
+     *
+     * @param chosenCandidate The candidate chosen by the user.
+     * @return The vote status.
+     */
+    public static HandleData.LoginStatus voteForUser(String chosenCandidate) {
+        // Check if the candidate exists in synchronized candidateMap
+        synchronized (userMapMutex) {
+            if (candidateMap.containsKey(chosenCandidate)) {
+                // Increment the votes for the chosen candidate
+                candidateMap.get(chosenCandidate).votes++;
+                return HandleData.LoginStatus.SUCCESS;
+            } else {
+                return HandleData.LoginStatus.FAILURE;
+            }
         }
-    } // End of handleVote
+    } // End of voteForUser
 
-    // Handle logout
-    private static HandleData.LoginStatus handleLogout() {
-        return HandleData.logoutUser();
+    /**
+     * This method handles the logout process.
+     *
+     */
+    private static void handleLogout() {
+        HandleData.logoutUser();
     }
-} // End of main.java.EmpowerVoteServer
+} // End of main

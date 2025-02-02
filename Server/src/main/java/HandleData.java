@@ -2,18 +2,27 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * The HandleData class provides methods to handle user authentication, voting, and data management.
+ */
 public class HandleData {
-
+    // Variables for user and vote data files
     private static final boolean DEBUG = false;
     private static String startupUserFilename;
     private static String startupVoteFilename;
     private static User currentUser;
 
-    private static final Map<String, User> userMap = new HashMap<>();
-    private static final Map<String, Candidate> candidateMap = new HashMap<>();
-
+    /**
+     * Initializes the server with user data.
+     *
+     * @param inputStream The input stream containing user data.
+     * @return The status of the server startup.
+     */
     public static StartupStatus serverStartup(InputStream inputStream) {
         List<User> loadedUsers = loadUserData(inputStream);
         if (loadedUsers.isEmpty()) {
@@ -21,13 +30,18 @@ public class HandleData {
         }
 
         for (User user : loadedUsers) {
-            userMap.put(user.name, user);
+            EmpowerVoteServer.userMap.put(user.name, user);
         }
 
-        startupUserFilename = "/UserData.tsv";
+        startupUserFilename = EmpowerVoteServer.USER_DATA_FILE;
         return StartupStatus.SUCCESS;
     } // End of serverStartup
 
+    /* Initializes the server with vote data.
+     *
+     * @param inputStream The input stream containing vote data.
+     * @return The status of the vote startup.
+     */
     public static StartupStatus voteStartup(InputStream inputStream) {
         List<Candidate> loadedCandidates = loadVoteData(inputStream);
         if (loadedCandidates.isEmpty()) {
@@ -35,15 +49,24 @@ public class HandleData {
         }
 
         for (Candidate candidate : loadedCandidates) {
-            candidateMap.put(candidate.name, candidate);
+            EmpowerVoteServer.candidateMap.put(candidate.name, candidate);
         }
 
-        startupVoteFilename = "/VoteData.tsv";
+        startupVoteFilename = EmpowerVoteServer.VOTE_DATA_FILE;
         return StartupStatus.SUCCESS;
     } // End of voteStartup
 
+    /**
+     * Authenticates a user with the provided username and password.
+     *
+     * @param username The username of the user.
+     * @param password The password of the user.
+     * @return The status of the user authentication.
+     */
     public static LoginStatus authenticateUser(String username, String password) {
         String passwordHash = getPasswordHash(password);
+        Map<String,HandleData. User> userMap = EmpowerVoteServer.getUserMap();
+
         User user = userMap.get(username);
         if (null != user) {
             if (user.password.equals(passwordHash)) {
@@ -54,56 +77,105 @@ public class HandleData {
                 currentUser = user;
                 return user.userLevel == 1 ? LoginStatus.AUTHENTICATED_ADMIN : LoginStatus.AUTHENTICATED_USER;
             }
+            System.out.println("Invalid password");
+            return LoginStatus.INVALID_CREDENTIALS;
         }
+        System.out.println("Invalid username");
 
         return LoginStatus.INVALID_CREDENTIALS;
     } // End of authenticateUser
 
-    public static LoginStatus voteForUser(String candidateName) {
-        Candidate candidate = candidateMap.get(candidateName);
-
-        if (currentUser == null || candidate == null) return LoginStatus.FAILURE;
-        if (currentUser.userVoted) return LoginStatus.ALREADY_VOTED;
-
-        ++candidate.votes;
-        currentUser.userVoted = true;
-        return LoginStatus.SUCCESS;
-    } // End of voteForUser
-
-    public static LoginStatus logoutUser() {
+    /**
+     * Logs out the current user.
+     *
+     */
+    public static void logoutUser() {
         if (null != currentUser)
-            return logoutUser(currentUser.name);
-        return LoginStatus.FAILURE;
+            logoutUser(currentUser.name);
     } // End of logoutUser
 
+    static HandleData.LoginStatus handleVote(BufferedReader inputBuffer) {
+        try {
+            // Get the chosen candidate from the client
+            String chosenCandidate = inputBuffer.readLine();
+
+            if (null == currentUser) return HandleData.LoginStatus.FAILURE;
+            if (currentUser.userLevel == 1 || null == chosenCandidate) return HandleData.LoginStatus.FAILURE;
+            if (currentUser.userVoted) return HandleData.LoginStatus.ALREADY_VOTED;
+
+            HandleData.LoginStatus status = EmpowerVoteServer.voteForUser(chosenCandidate);
+            if (status == HandleData.LoginStatus.SUCCESS) {
+                // Update the userVoted status for the current user
+                currentUser.userVoted = true;
+            }
+            return status;
+        } catch (IOException e) {
+            return HandleData.LoginStatus.FAILURE;
+        }
+    } // End of handleVote
+
+    /**
+     * Checks if the current user is an admin.
+     *
+     * @return True if the current user is an admin, false otherwise.
+     */
     public static boolean checkAdmin() {
         return currentUser != null && currentUser.userLevel == 1;
     } // End of logoutUser
 
-    public static LoginStatus logoutUser(String username) {
+    /**
+     * Logs out a user with the provided username.
+     *
+     * @param username The username of the user to log out.
+     */
+    public static void logoutUser(String username) {
+        Map<String,HandleData. User> userMap = EmpowerVoteServer.getUserMap();
+
         User user = userMap.get(username);
         if (user != null) {
             user.loggedIn = false;
-            return LoginStatus.SUCCESS;
         }
-        return LoginStatus.FAILURE;
     } // End of logoutUser
 
+    /**
+     * Logs out all users.
+     */
     public static void logoutAllUsers() {
-        userMap.values().forEach(user -> user.loggedIn = false);
+        // Get the user map
+        Map<String, HandleData.User> users = EmpowerVoteServer.getUserMap();
+
+        // Check if the user map is not null
+        if (users != null) {
+            // Iterate through all users and set their loggedIn status to false
+            users.values().forEach(user -> user.loggedIn = false);
+        }
     } // End of logoutAllUsers
 
-    public static boolean addUser(String username, String password, int userLevel, List<User> users) {
+    /**
+     * Adds a new user with the provided username, password, and user level.
+     *
+     * @param username  The username of the new user.
+     * @param password  The password of the new user.
+     * @param userLevel The user level of the new user.
+     * @return True if the user was added successfully, false otherwise.
+     */
+    public static boolean addUser(String username, String password, int userLevel) {
+
+        Map<String, HandleData. User> userMap = EmpowerVoteServer.getUserMap();
         if (userMap.containsKey(username)) return false;
 
         String passwordHash = getPasswordHash(password);
         User newUser = new User(username, passwordHash, userLevel, false, false);
 
-        users.add(newUser);
-        userMap.put(username, newUser);
+        EmpowerVoteServer.addUserToMap(newUser);
         return true;
     } // End of addUser
 
+    /**
+     * Get the password hash of the provided password.
+     * @param password The password to hash.
+     * @return The hashed password.
+     */
     private static String getPasswordHash(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -120,7 +192,14 @@ public class HandleData {
         }
     } // End of getPasswordHash
 
+    /**
+     * Shuts down the server and saves user and vote data.
+     */
     public static void serverShutdown() {
+        Map<String, HandleData. User> userMap = EmpowerVoteServer.getUserMap();
+
+        if (userMap == null) return;
+
         userMap.values().forEach(user -> user.loggedIn = false);
         String backupUserFilename = startupUserFilename + "_bck";
         String backupVoteFilename = startupVoteFilename + "_bck";
@@ -146,6 +225,13 @@ public class HandleData {
         }
     } // End of serverShutdown
 
+    /**
+     * Replaces the original file with the backup file.
+     *
+     * @param backupFileName   The name of the backup file.
+     * @param originalFileName The name of the original file.
+     * @return True if the operation was successful, false otherwise.
+     */
     private static boolean replaceFile(String backupFileName, String originalFileName) {
         File backupFile = new File(backupFileName);
         File originalFile = new File(originalFileName);
@@ -165,18 +251,30 @@ public class HandleData {
         return false;
     } // End of replaceFile
 
+    /**
+     * Gets the list of candidates and their votes.
+     *
+     * @param isAdmin True if the user is an admin, false otherwise.
+     * @return The list of candidates and their votes.
+     */
     public static Map<String, Candidate> getVotes(boolean isAdmin) {
+        Map<String, HandleData. Candidate> candidateMap = EmpowerVoteServer.getCandidateMap();
         if (isAdmin) return candidateMap;
 
-        // Hide the votes from the user
+        // Hide the votes from the user by making a copy of the candidate map
         Map<String, Candidate> tempMap = new HashMap<>();
         for (Candidate candidate : candidateMap.values()) {
-            candidate.votes = 0;
+            candidate = new Candidate(candidate.name, candidate.position, 0);
             tempMap.put(candidate.name, candidate);
         }
         return tempMap;
     } // End of getVotes
 
+    /**
+     * Gets the list of users.
+     *
+     * @return The list of users.
+     */
     private static int parseUserLevel(String level) {
         return switch (level) {
             case "user" -> 0;
@@ -186,6 +284,12 @@ public class HandleData {
     } // End of parseUserLevel
 
 
+    /**
+     * Loads user data from a file.
+     *
+     * @param inputStream The input stream containing user data.
+     * @return The list of users.
+     */
     private static List<User> loadUserData(InputStream inputStream) {
         List<User> users = new ArrayList<>();
 
@@ -202,7 +306,7 @@ public class HandleData {
                     isFirstLine = false;
                     continue;
                 }
-                String[] parts = line.split("\t");
+                String[] parts = line.split("\\t");
                 if (parts.length == 4) {
                     try {
                         users.add(new User(parts[0], parts[1], parseUserLevel(parts[2]),
@@ -218,6 +322,12 @@ public class HandleData {
         return users;
     } // End of loadUserData
 
+    /**
+     * Loads vote data from a file.
+     *
+     * @param fileStream The input stream containing vote data.
+     * @return The list of candidates.
+     */
     public static List<Candidate> loadVoteData(InputStream fileStream) {
         List<Candidate> candidates = new ArrayList<>();
 
@@ -234,7 +344,7 @@ public class HandleData {
                     isFirstLine = false;
                     continue;
                 }
-                String[] parts = line.split("\t");
+                String[] parts = line.split("\\t");
                 if (parts.length == 3) {
                     candidates.add(new Candidate(parts[0], parts[1], Integer.parseInt(parts[2])));
                 }
@@ -245,10 +355,16 @@ public class HandleData {
         return candidates;
     } // End of loadVoteData
 
+    /**
+     * Saves user data to a file.
+     *
+     * @param filePath The path of the file to save the user data.
+     * @return True if the operation was successful, false otherwise.
+     */
     private static boolean saveUserData(String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write("Name\tPassword\tRole\tVoted\n");
-            for (User user : userMap.values()) {
+            for (User user : EmpowerVoteServer.userMap.values()) {
                 writer.write(String.format("%s\t%s\t%s\t%s\n",
                         user.name, user.password, user.userLevel == 0 ? "user" : "admin", user.userVoted));
             }
@@ -259,7 +375,19 @@ public class HandleData {
         return true;
     } // End of saveUserData
 
+    /**
+     * Saves vote data to a file.
+     *
+     * @param filePath The path of the file to save the vote data.
+     * @return True if the operation was successful, false otherwise.
+     */
     private static boolean saveVoteData(String filePath) {
+        Map <String, HandleData. Candidate> candidateMap = EmpowerVoteServer.getCandidateMap();
+        if (null == candidateMap) {
+            System.out.println("Error saving vote data: Candidate map is null");
+            return false;
+        }
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write("Name\tPosition\tVotes\n");
             for (Candidate candidate : candidateMap.values()) {
@@ -272,14 +400,23 @@ public class HandleData {
         return true;
     } // End of saveVoteData
 
+    /**
+     * LoginStatus enum for user authentication.
+     */
     public enum LoginStatus {
-        AUTHENTICATED_USER, AUTHENTICATED_ADMIN, INVALID_CREDENTIALS, ALREADY_LOGGED_IN, ALREADY_EXISTS, ALREADY_VOTED, SUCCESS, FAILURE, SHUT_DOWN, UNKNOWN_COMMAND
+        AUTHENTICATED_USER, AUTHENTICATED_ADMIN, INVALID_CREDENTIALS, ALREADY_LOGGED_IN, ALREADY_EXISTS, ALREADY_VOTED, SUCCESS, FAILURE, SHUT_DOWN, LOGOUT_REQUEST, UNKNOWN_COMMAND
     } // End of LoginStatus enum
 
+    /**
+     * StartupStatus enum for server startup.
+     */
     public enum StartupStatus {
         SUCCESS, FAILURE
     } // End of StartupStatus enum
 
+    /**
+     * User class to store user data.
+     */
     public static class User {
         String name;
         String password;
@@ -299,6 +436,9 @@ public class HandleData {
         }
     } // End of User class
 
+    /**
+     * Candidate class to store candidate data.
+     */
     public static class Candidate {
         public String name;
         public String position;
