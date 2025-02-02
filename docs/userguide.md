@@ -15,7 +15,7 @@ To run EmpowerVote, you need the following:
     - `UserData.tsv`: Contains user data.
     - `VoteStatus.tsv`: Contains voting status data.
 
-Ensure that these files are in the correct `resource` directory relative to the program's location.
+Ensure that these files are in the `resources/` directory relative to the program's location.
 
 ---
 
@@ -30,76 +30,81 @@ java -version
 If the version is lower than 22, download and install JDK 22 from the [official site](https://jdk.java.net/22/).
 
 ### Step 2: Compile the Program (Optional)
-If you have the source code and need to compile it:
-
-[//]: # (Add compilation instructions)
-This generates the required binary files in the `out` directory.
+If you have the source code and need to compile it, navigate to the source directory and run:
+```
+javac EmpowerVoteClient.java
+```
+This generates the required binary files.
 
 ### Step 3: Run the Program
-[//]: # (Add run instructions)
-
+To run the client application, use:
+```
+java EmpowerVoteClient <server_address> <server_port>
+```
+If no arguments are provided, it defaults to `localhost` on port `12345`.
 
 ---
 
 ## Application Flow
 
-Once the program starts, you will interact with a text-based GUI that offers several options:
+Once the program starts, you will interact with a text-based menu that offers several options:
 
-### Initial GUI
-[//]: # (Add GUI Screenshot)
+### Initial Menu
 ```
-Welcome to EmpowerVote!
-
-Select an option:
-1: Login
-2: Register User
-3: Exit
+Enter command (Login, Register, Exit):
 ```
 
 #### Option 1: Login
 1. Enter your username and password.
 2. Based on your credentials, you will either:
-    - Access **User GUI**.
-    - Access **Admin GUI**.
+    - Access **User Menu**.
+    - Access **Admin Menu**.
 3. If login fails, you will receive an appropriate error message.
 
 #### Option 2: Register User
 1. Enter a username and password for the new user.
-2. The system will confirm if the registration was successful or if the user already exists. (TODO: Add screenshots for success and failure)
+2. The system will confirm if the registration was successful or if the user already exists.
 
 #### Option 3: Exit
-The program saves all data and shuts down gracefully.
+The program disconnects from the server and terminates.
 
 ---
 
-## User GUI
+## User Menu
 
-If you log in as a regular user, you will access the User GUI. The following features are available:
+Once logged in as a user, you will see the following options:
 
-[//]: # (Add GUI Screenshot)
+```
+User Menu:
+1: Vote
+2: Logout
+Enter option:
+```
+
 1. **Vote for Candidates**:
     - Candidates are displayed, grouped by position.
-    - Use radio buttons to select a candidate for each position.
-
+    - Enter the candidate's name to vote.
+    - The server confirms your vote.
 2. **Logout**:
-    - Once you have voted, you can log out to end your session.
+    - Ends the user session and returns to the main menu.
 
 ---
 
-## Admin GUI
+## Admin Menu
 
-If you log in as an admin, you will access the Admin GUI. The following features are available:
+If you log in as an admin, you will see the following options:
 
-[//]: # (Add GUI Screenshot)
+```
+Admin Menu:
+1: View Votes
+2: Logout
+Enter option:
+```
+
 1. **View Voting Statistics**:
-    - See the number of votes for each candidate.
-    - Candidates are displayed, grouped by position.
-
-2. **Register New Admin**:
-    - Add a new admin user by providing a username and password.
-
-3. **Logout All Users**:
-    - Log out all active users.
+    - Displays the current vote tally.
+2. **Logout**:
+    - Ends the admin session and returns to the main menu.
 
 ---
 
@@ -113,12 +118,13 @@ If you log in as an admin, you will access the Admin GUI. The following features
   Ensure you are running the program with JDK 22 or higher.
 
 - **Recompiling for Compatibility**:
-  If you want the program to run on JDK 21, recompile with the following command:
-  
-[//]: # (Provide recompilation command)
+  If you want the program to run on JDK 21, recompile with:
+  ```
+  javac --release 21 EmpowerVoteClient.java
+  ```
 
 - **Resource Files**:
-  Ensure that `UserData.tsv` and `VoteStatus.tsv` are present in the `resource` folder and properly formatted.
+  Ensure that `UserData.tsv` and `VoteStatus.tsv` are present in the `resources/` folder and properly formatted.
 
 ---
 
