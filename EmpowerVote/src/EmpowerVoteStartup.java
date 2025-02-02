@@ -26,7 +26,12 @@ public class EmpowerVoteStartup {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to EmpowerVote!\n");
 
+        boolean firstIteration = true;
         while (!serverError) {
+            // Print restart on subsequent iterations
+            if (!firstIteration) {
+                System.out.println("Restarting to simulate other users!\n");
+            }
             System.out.println("""
             Select an option:
             1: Login
@@ -34,18 +39,26 @@ public class EmpowerVoteStartup {
             3: Exit""");
 
             String choice = scanner.nextLine();
-            System.out.println();
 
             // Handle user choice
             switch (choice) {
-                case "1" -> handleLogin(scanner);
-                case "2" -> handleRegistration(scanner, false);
+                case "1" -> {
+                    handleLogin(scanner);
+                    firstIteration = false;
+                }
+                case "2" -> {
+                    handleRegistration(scanner, false);
+                    firstIteration = false;
+                }
                 case "3" -> {
                     HandleData.serverShutdown();
                     serverError = true;
                 }
                 default -> System.out.println("Invalid option. Please try again.");
             } // switch
+
+            // Set first iteration to false after first run
+            firstIteration = false;
         } // while
         System.out.println("Exiting program. Goodbye!");
     } // End of main
