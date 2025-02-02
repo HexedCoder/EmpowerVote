@@ -8,9 +8,9 @@ import java.util.List;
  * It handles user input, sends commands to the server, and displays responses.
  */
 class UserInterface {
+    public static final String DELIMITER = ",";
     // The server private variables for the UserInterface class
     private static volatile boolean clientActive = true;
-    public static final String DELIMITER = ",";
     private final ServerConnection server;
     private final BufferedReader userInput;
     private final List<String> validCommands = Arrays.asList("LOGIN", "REGISTER", "EXIT");

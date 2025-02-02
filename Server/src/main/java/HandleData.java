@@ -65,7 +65,7 @@ public class HandleData {
      */
     public static LoginStatus authenticateUser(String username, String password) {
         String passwordHash = getPasswordHash(password);
-        Map<String,HandleData. User> userMap = EmpowerVoteServer.getUserMap();
+        Map<String, HandleData.User> userMap = EmpowerVoteServer.getUserMap();
 
         User user = userMap.get(username);
         if (null != user) {
@@ -87,11 +87,9 @@ public class HandleData {
 
     /**
      * Logs out the current user.
-     *
      */
     public static void logoutUser() {
-        if (null != currentUser)
-            logoutUser(currentUser.name);
+        if (null != currentUser) logoutUser(currentUser.name);
     } // End of logoutUser
 
     static HandleData.LoginStatus handleVote(BufferedReader inputBuffer) {
@@ -129,7 +127,7 @@ public class HandleData {
      * @param username The username of the user to log out.
      */
     public static void logoutUser(String username) {
-        Map<String,HandleData. User> userMap = EmpowerVoteServer.getUserMap();
+        Map<String, HandleData.User> userMap = EmpowerVoteServer.getUserMap();
 
         User user = userMap.get(username);
         if (user != null) {
@@ -161,7 +159,7 @@ public class HandleData {
      */
     public static boolean addUser(String username, String password, int userLevel) {
 
-        Map<String, HandleData. User> userMap = EmpowerVoteServer.getUserMap();
+        Map<String, HandleData.User> userMap = EmpowerVoteServer.getUserMap();
         if (userMap.containsKey(username)) return false;
 
         String passwordHash = getPasswordHash(password);
@@ -173,6 +171,7 @@ public class HandleData {
 
     /**
      * Get the password hash of the provided password.
+     *
      * @param password The password to hash.
      * @return The hashed password.
      */
@@ -196,7 +195,7 @@ public class HandleData {
      * Shuts down the server and saves user and vote data.
      */
     public static void serverShutdown() {
-        Map<String, HandleData. User> userMap = EmpowerVoteServer.getUserMap();
+        Map<String, HandleData.User> userMap = EmpowerVoteServer.getUserMap();
 
         if (userMap == null) return;
 
@@ -258,7 +257,7 @@ public class HandleData {
      * @return The list of candidates and their votes.
      */
     public static Map<String, Candidate> getVotes(boolean isAdmin) {
-        Map<String, HandleData. Candidate> candidateMap = EmpowerVoteServer.getCandidateMap();
+        Map<String, HandleData.Candidate> candidateMap = EmpowerVoteServer.getCandidateMap();
         if (isAdmin) return candidateMap;
 
         // Hide the votes from the user by making a copy of the candidate map
@@ -309,8 +308,7 @@ public class HandleData {
                 String[] parts = line.split("\\t");
                 if (parts.length == 4) {
                     try {
-                        users.add(new User(parts[0], parts[1], parseUserLevel(parts[2]),
-                                Boolean.parseBoolean(parts[3]), false));
+                        users.add(new User(parts[0], parts[1], parseUserLevel(parts[2]), Boolean.parseBoolean(parts[3]), false));
                     } catch (NumberFormatException e) {
                         System.out.printf("Error parsing user data: %s%n", e.getMessage());
                     }
@@ -365,8 +363,7 @@ public class HandleData {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write("Name\tPassword\tRole\tVoted\n");
             for (User user : EmpowerVoteServer.userMap.values()) {
-                writer.write(String.format("%s\t%s\t%s\t%s\n",
-                        user.name, user.password, user.userLevel == 0 ? "user" : "admin", user.userVoted));
+                writer.write(String.format("%s\t%s\t%s\t%s\n", user.name, user.password, user.userLevel == 0 ? "user" : "admin", user.userVoted));
             }
         } catch (IOException e) {
             System.out.printf("Error saving user data: %s%n", e.getMessage());
@@ -382,7 +379,7 @@ public class HandleData {
      * @return True if the operation was successful, false otherwise.
      */
     private static boolean saveVoteData(String filePath) {
-        Map <String, HandleData. Candidate> candidateMap = EmpowerVoteServer.getCandidateMap();
+        Map<String, HandleData.Candidate> candidateMap = EmpowerVoteServer.getCandidateMap();
         if (null == candidateMap) {
             System.out.println("Error saving vote data: Candidate map is null");
             return false;
@@ -449,8 +446,7 @@ public class HandleData {
             this.position = position;
             this.votes = votes;
             if (DEBUG) {
-                System.out.printf("New Candidate: %n\tName: %s%n\tPosition: %s%n\tVotes: %d%n",
-                        name, position, votes);
+                System.out.printf("New Candidate: %n\tName: %s%n\tPosition: %s%n\tVotes: %d%n", name, position, votes);
             }
         } // End of Candidate constructor
 

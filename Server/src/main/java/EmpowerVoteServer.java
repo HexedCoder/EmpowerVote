@@ -6,22 +6,18 @@ import java.net.SocketTimeoutException;
 import java.util.*;
 
 public class EmpowerVoteServer {
-    // Add volatile keyword to ensure visibility of changes to gServerShutdown
-    private static volatile boolean gServerShutdown = false;
-
     // Add DELIMITER constant to separate fields in the input
     public static final String DELIMITER = ",";
-
     // Variables for files to parse
     public static final String USER_DATA_FILE = "resources/UserData.tsv";
     public static final String VOTE_DATA_FILE = "resources/VoteData.tsv";
-
     // Data structures to store user and vote data
     public static final Map<String, HandleData.User> userMap = new HashMap<>();
     public static final Map<String, HandleData.Candidate> candidateMap = new HashMap<>();
-
     // Define Mutex for userMap and candidateMap
     public static final Object userMapMutex = new Object();
+    // Add volatile keyword to ensure visibility of changes to gServerShutdown
+    private static volatile boolean gServerShutdown = false;
 
     public static void main(String[] args) {
         // server variables
@@ -113,7 +109,7 @@ public class EmpowerVoteServer {
 
                     // Start a new thread to handle the client
                     new Thread(() -> handleClient(clientSocket)).start();
-                }catch (SocketTimeoutException _) {
+                } catch (SocketTimeoutException _) {
                     // Check for shutdown signal during Timeout
                 } catch (IOException e) {
                     if (gServerShutdown) {
@@ -385,7 +381,7 @@ public class EmpowerVoteServer {
     /**
      * This method constructs a StringBuilder with the vote information.
      *
-     * @param isAdmin         A boolean indicating if the user is an admin.
+     * @param isAdmin          A boolean indicating if the user is an admin.
      * @param sortedCandidates A list of sorted candidates.
      * @return The StringBuilder containing the vote information.
      */
@@ -425,7 +421,6 @@ public class EmpowerVoteServer {
 
     /**
      * This method handles the logout process.
-     *
      */
     private static void handleLogout() {
         HandleData.logoutUser();

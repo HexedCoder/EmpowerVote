@@ -1,5 +1,7 @@
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 
 /**
  * The EmpowerVoteClient class establishes a connection to the voting server
