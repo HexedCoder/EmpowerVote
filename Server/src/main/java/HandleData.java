@@ -1,5 +1,3 @@
-package src.main.java.support;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -7,19 +5,17 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class HandleData {
-    public enum LoginStatus {
-        AUTHENTICATED_USER, AUTHENTICATED_ADMIN, INVALID_CREDENTIALS, ALREADY_LOGGED_IN, ALREADY_VOTED, FAILURE
-    } // End of LoginStatus enum
 
     private static final boolean DEBUG = false;
     private static String startupUserFilename;
     private static String startupVoteFilename;
+    private static User currentUser;
 
     private static final Map<String, User> userMap = new HashMap<>();
     private static final Map<String, Candidate> candidateMap = new HashMap<>();
 
-    public static StartupStatus serverStartup(String filePath) {
-        List<User> loadedUsers = loadUserData(filePath);
+    public static StartupStatus serverStartup(InputStream inputStream) {
+        List<User> loadedUsers = loadUserData(inputStream);
         if (loadedUsers.isEmpty()) {
             return StartupStatus.FAILURE;
         }
@@ -28,12 +24,12 @@ public class HandleData {
             userMap.put(user.name, user);
         }
 
-        startupUserFilename = filePath;
+        startupUserFilename = "/UserData.tsv";
         return StartupStatus.SUCCESS;
     } // End of serverStartup
 
-    public static StartupStatus voteStartup(String filePath) {
-        List<Candidate> loadedCandidates = loadVoteData(filePath);
+    public static StartupStatus voteStartup(InputStream inputStream) {
+        List<Candidate> loadedCandidates = loadVoteData(inputStream);
         if (loadedCandidates.isEmpty()) {
             return StartupStatus.FAILURE;
         }
@@ -42,53 +38,68 @@ public class HandleData {
             candidateMap.put(candidate.name, candidate);
         }
 
-        startupVoteFilename = filePath;
+        startupVoteFilename = "/VoteData.tsv";
         return StartupStatus.SUCCESS;
     } // End of voteStartup
 
     public static LoginStatus authenticateUser(String username, String password) {
         String passwordHash = getPasswordHash(password);
-
         User user = userMap.get(username);
         if (null != user) {
-                if (user.password.equals(passwordHash)) {
-                    if (user.loggedIn && user.userLevel == 0) return LoginStatus.ALREADY_LOGGED_IN;
-                    if (user.userVoted) return LoginStatus.ALREADY_VOTED;
+            if (user.password.equals(passwordHash)) {
+                if (user.loggedIn && user.userLevel == 0) return LoginStatus.ALREADY_LOGGED_IN;
+                if (user.userVoted) return LoginStatus.ALREADY_VOTED;
 
-                    user.loggedIn = true;
-                    return user.userLevel == 1 ? LoginStatus.AUTHENTICATED_ADMIN : LoginStatus.AUTHENTICATED_USER;
-                }
+                user.loggedIn = true;
+                currentUser = user;
+                return user.userLevel == 1 ? LoginStatus.AUTHENTICATED_ADMIN : LoginStatus.AUTHENTICATED_USER;
             }
+        }
 
         return LoginStatus.INVALID_CREDENTIALS;
     } // End of authenticateUser
 
-    public static boolean voteForUser(String username, String candidateName) {
-        User user = userMap.get(username);
+    public static LoginStatus voteForUser(String candidateName) {
         Candidate candidate = candidateMap.get(candidateName);
 
-        if (user == null || candidate == null || user.userVoted) return false;
+        if (currentUser == null || candidate == null) return LoginStatus.FAILURE;
+        if (currentUser.userVoted) return LoginStatus.ALREADY_VOTED;
 
         ++candidate.votes;
-        user.userVoted = true;
-        return true;
+        currentUser.userVoted = true;
+        return LoginStatus.SUCCESS;
     } // End of voteForUser
 
-    public static void logoutUser(String username) {
+    public static LoginStatus logoutUser() {
+        if (null != currentUser)
+            return logoutUser(currentUser.name);
+        return LoginStatus.FAILURE;
+    } // End of logoutUser
+
+    public static boolean checkAdmin() {
+        return currentUser != null && currentUser.userLevel == 1;
+    } // End of logoutUser
+
+    public static LoginStatus logoutUser(String username) {
         User user = userMap.get(username);
-        if (user != null) user.loggedIn = false;
+        if (user != null) {
+            user.loggedIn = false;
+            return LoginStatus.SUCCESS;
+        }
+        return LoginStatus.FAILURE;
     } // End of logoutUser
 
     public static void logoutAllUsers() {
         userMap.values().forEach(user -> user.loggedIn = false);
     } // End of logoutAllUsers
 
-    public static boolean addUser(String username, String password, int userLevel) {
+    public static boolean addUser(String username, String password, int userLevel, List<User> users) {
         if (userMap.containsKey(username)) return false;
 
         String passwordHash = getPasswordHash(password);
         User newUser = new User(username, passwordHash, userLevel, false, false);
 
+        users.add(newUser);
         userMap.put(username, newUser);
         return true;
     } // End of addUser
@@ -175,10 +186,15 @@ public class HandleData {
     } // End of parseUserLevel
 
 
-    private static List<User> loadUserData(String filePath) {
+    private static List<User> loadUserData(InputStream inputStream) {
         List<User> users = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        if (null == inputStream) {
+            System.out.println("Error loading user data: File path is null");
+            return users;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             String line;
             boolean isFirstLine = true;
             while ((line = reader.readLine()) != null) {
@@ -202,10 +218,15 @@ public class HandleData {
         return users;
     } // End of loadUserData
 
-    public static List<Candidate> loadVoteData(String filePath) {
+    public static List<Candidate> loadVoteData(InputStream fileStream) {
         List<Candidate> candidates = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        if (null == fileStream) {
+            System.out.println("Error loading candidate data: File path is null");
+            return candidates;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(fileStream))) {
             String line;
             boolean isFirstLine = true;
             while ((line = reader.readLine()) != null) {
@@ -251,6 +272,10 @@ public class HandleData {
         return true;
     } // End of saveVoteData
 
+    public enum LoginStatus {
+        AUTHENTICATED_USER, AUTHENTICATED_ADMIN, INVALID_CREDENTIALS, ALREADY_LOGGED_IN, ALREADY_EXISTS, ALREADY_VOTED, SUCCESS, FAILURE, SHUT_DOWN, UNKNOWN_COMMAND
+    } // End of LoginStatus enum
+
     public enum StartupStatus {
         SUCCESS, FAILURE
     } // End of StartupStatus enum
@@ -275,9 +300,9 @@ public class HandleData {
     } // End of User class
 
     public static class Candidate {
-        String name;
-        String position;
-        int votes;
+        public String name;
+        public String position;
+        public int votes;
 
         public Candidate(String name, String position, int votes) {
             this.name = name;
@@ -290,4 +315,4 @@ public class HandleData {
         } // End of Candidate constructor
 
     } // End of Candidate class
-} // End of HandleData class
+} // End of main.java.HandleData class
