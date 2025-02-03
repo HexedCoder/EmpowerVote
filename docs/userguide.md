@@ -1,7 +1,7 @@
 # EmpowerVote User Guide
 
 ## Introduction
-EmpowerVote is a voting application designed to manage user registration, authentication, and secure voting operations. This guide outlines how to run the binary and interact with the program.
+EmpowerVote is a voting application designed to manage user registration, authentication, and secure voting operations. This guide outlines how to build and run the application.
 
 ---
 
@@ -19,29 +19,44 @@ Ensure that these files are in the `resources/` directory relative to the progra
 
 ---
 
-## How to Run the Application
+## How to Build and Run the Application
 
 ### Step 1: Verify JDK Installation
 
 Ensure you have JDK 22 or higher installed. You can check the version by running:
+
 ```
 java -version
 ```
-If the version is lower than 22, download and install JDK 22 from the [official site](https://jdk.java.net/22/).
+If the version is lower than 22, download and install JDK 22 from the [official site](https://jdk.java.net/archive/).
 
-### Step 2: Compile the Program (Optional)
-If you have the source code and need to compile it, navigate to the source directory and run:
-```
-javac EmpowerVoteClient.java
-```
-This generates the required binary files.
+### Step 2: Build the Application
 
-### Step 3: Run the Program
-To run the client application, use:
+The code is built with the IDE and configured to generate artifacts. Upon building, the artifacts are placed in:
+
+- `out/artifacts/Client/Client.jar`
+- `out/artifacts/Server/Server.jar`
+
+### Step 3: Run the Application
+
+Navigate to the directory containing the artifact and execute:
+
+For the server:
+
+```bash
+cd out/artifacts/Server/ 
+java -jar Server.jar <port> <ip>
 ```
-java EmpowerVoteClient <server_address> <server_port>
+
+For the client:
+
+```bash
+cd out/artifacts/Client/ 
+java -jar Client.jar <port> <ip>
 ```
-If no arguments are provided, it defaults to `localhost` on port `12345`.
+
+
+If no arguments are provided, the client and server default to `localhost` on port `12345`.
 
 ---
 
@@ -50,6 +65,7 @@ If no arguments are provided, it defaults to `localhost` on port `12345`.
 Once the program starts, you will interact with a text-based menu that offers several options:
 
 ### Initial Menu
+
 ```
 Enter command (Login, Register, Exit):
 ```
@@ -74,13 +90,6 @@ The program disconnects from the server and terminates.
 
 Once logged in as a user, you will see the following options:
 
-```
-User Menu:
-1: Vote
-2: Logout
-Enter option:
-```
-
 1. **Vote for Candidates**:
     - Candidates are displayed, grouped by position.
     - Enter the candidate's name to vote.
@@ -94,40 +103,42 @@ Enter option:
 
 If you log in as an admin, you will see the following options:
 
+Admin Menu: 
+
 ```
-Admin Menu:
-1: View Votes
-2: Logout
+1: **View Votes**
+
+2: Logout 
+
+3. Logout All
+
+4. Exit
+```
+
 Enter option:
-```
+
 
 1. **View Voting Statistics**:
     - Displays the current vote tally.
 2. **Logout**:
     - Ends the admin session and returns to the main menu.
+3. **Logout All**
+    - Logout all logged in users.
+4. **Shutdown**
+    - Shut down the server.
 
 ---
 
 ## Notes and Troubleshooting
 
 - **Unsupported Java Version**:
-  If you encounter an error like:
-  ```
-  java.lang.UnsupportedClassVersionError: ... has been compiled by a more recent version of the Java Runtime
-  ```
-  Ensure you are running the program with JDK 22 or higher.
+  If you encounter the below error:
+```
+java.lang.UnsupportedClassVersionError: ... has been compiled by a more recent version of the Java Runtime
+```
 
-- **Recompiling for Compatibility**:
-  If you want the program to run on JDK 21, recompile with:
-  ```
-  javac --release 21 EmpowerVoteClient.java
-  ```
+Ensure you are running the program with JDK 22 or higher.
 
 - **Resource Files**:
-  Ensure that `UserData.tsv` and `VoteStatus.tsv` are present in the `resources/` folder and properly formatted.
 
----
-
-## Additional Information
-
-For more details or assistance, contact the program administrator or refer to the source code documentation.
+Ensure that `UserData.tsv` and `VoteStatus.tsv` are present in the `resources/` folder of the Server and properly formatted.
