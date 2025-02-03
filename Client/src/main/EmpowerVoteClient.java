@@ -27,13 +27,15 @@ public class EmpowerVoteClient {
             serverAddress = args[0];
             try {
                 serverPort = Integer.parseInt(args[1]);
+                if (serverPort < 0 || serverPort > 65535) {
+                    throw new NumberFormatException();
+                }
             } catch (NumberFormatException e) {
+                serverPort = 12345;
                 System.err.println("Invalid port number. Using default port 12345.");
             }
-        } else {
-            System.err.println("Usage: EmpowerVoteClient <server_address> <server_port>");
-            System.out.println("Using default server address 'localhost' and port 12345.");
         }
+        System.out.println("Connecting to server at " + serverAddress + ":" + serverPort + "...");
 
         // Connect to the server and start the user interface
         try (Socket socket = new Socket(serverAddress, serverPort);

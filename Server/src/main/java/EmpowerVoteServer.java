@@ -31,11 +31,18 @@ public class EmpowerVoteServer {
 
         if (args.length == 2) {
             userIP = args[0];
-            userPort = Integer.parseInt(args[1]);
-        } else {
-            System.err.println("Usage: main.java.EmpowerVoteServer <server ip> <server port>\n");
-            System.out.println("Using default host and port: localhost:12345\n");
+            try {
+                userPort = Integer.parseInt(args[1]);
+                if (userPort < 0 || userPort > 65535) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                userPort = 12345;
+                System.err.println("Invalid port number. Using default port 12345.");
+            }
         }
+
+        System.out.println("Starting server on " + userIP + ":" + userPort);
 
         // Initialize to error status
         HandleData.StartupStatus startupStatus;
