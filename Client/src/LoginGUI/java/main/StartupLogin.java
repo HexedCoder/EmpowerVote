@@ -112,7 +112,24 @@ public class StartupLogin extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Login button clicked!");
-                performLogin();
+                PanelLoginAndRegister.LoginStatus status = performLogin();
+                System.out.println("Login status: " + status);
+
+                switch (status) {
+                    case AUTHENTICATED_ADMIN -> {
+                        loginAndRegister.setLoginMessage("Admin Login successful!", true);
+                        loginAndRegister.disableLoginButton();
+
+                    }
+                    case AUTHENTICATED_USER -> {
+                        loginAndRegister.setLoginMessage("User Login successful!", true);
+                        loginAndRegister.disableLoginButton();
+                    }
+                    case INVALID_CREDENTIALS -> loginAndRegister.setLoginMessage("Invalid credentials!", false);
+                    case ALREADY_VOTED -> loginAndRegister.setLoginMessage("You have already voted!", false);
+                    case ALREADY_LOGGED_IN -> loginAndRegister.setLoginMessage("Already logged in!", false);
+                    case FAILURE -> loginAndRegister.setLoginMessage("Login failed!", false);
+                }
             }
         });
 
@@ -126,13 +143,13 @@ public class StartupLogin extends javax.swing.JFrame {
         });
     }
 
-    private void performLogin() {
+    private PanelLoginAndRegister.LoginStatus performLogin() {
         String username = loginAndRegister.getLoginUsername();
         String password = loginAndRegister.getLoginPassword();
 
         if (username.isEmpty() || password.isEmpty()) {
             System.out.println("Username or password cannot be empty.");
-            return;
+            return PanelLoginAndRegister.LoginStatus.FAILURE;
         }
 
         System.out.println("Attempting login with username: " + username);
@@ -143,9 +160,16 @@ public class StartupLogin extends javax.swing.JFrame {
 
         try {
             String response = serverIn.readLine();
-            System.out.println("Server response: " + response);
+            return switch (response) {
+                case "AUTHENTICATED_ADMIN" -> PanelLoginAndRegister.LoginStatus.AUTHENTICATED_ADMIN;
+                case "AUTHENTICATED_USER" -> PanelLoginAndRegister.LoginStatus.AUTHENTICATED_USER;
+                case "INVALID_CREDENTIALS" -> PanelLoginAndRegister.LoginStatus.INVALID_CREDENTIALS;
+                case "ALREADY_VOTED" -> PanelLoginAndRegister.LoginStatus.ALREADY_VOTED;
+                case "ALREADY_LOGGED_IN" -> PanelLoginAndRegister.LoginStatus.ALREADY_LOGGED_IN;
+                case null, default -> PanelLoginAndRegister.LoginStatus.FAILURE;
+            };
         } catch (IOException e) {
-            System.err.println("Error receiving login response: " + e.getMessage());
+            return PanelLoginAndRegister.LoginStatus.FAILURE;
         }
     }
 
@@ -168,8 +192,11 @@ public class StartupLogin extends javax.swing.JFrame {
             String response = serverIn.readLine();
             System.out.println("Server response: " + response);
             switch (response) {
-                case "SUCCESS" -> loginAndRegister.setRegisterMessage("Registration successful!", true);
-                case "USERNAME_TAKEN" -> loginAndRegister.setRegisterMessage("Username already taken!", false);
+                case "SUCCESS" -> {
+                    loginAndRegister.setRegisterMessage("Registration successful!", true);
+                    loginAndRegister.disableRegisterButton();
+                }
+                case "ALREADY_EXISTS" -> loginAndRegister.setRegisterMessage("Username already taken!", false);
                 case "FAILURE" -> loginAndRegister.setRegisterMessage("Registration failed!", false);
                 case null, default -> loginAndRegister.setRegisterMessage("Unknown error occurred!", false);
             }

@@ -24,6 +24,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
     private MyPasswordField txtLoginPass;
     private MyPasswordField txtRegisterPass;
     private JLabel lblRegisterMessage;
+    private JLabel lblLoginMessage;
 
 
     public PanelLoginAndRegister() {
@@ -101,6 +102,16 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         txtLoginPass.setPrefixIcon(new ImageIcon("src/resources/pass.png")); // icon for password
         txtLoginPass.setHint("password");
         login.add(txtLoginPass, "w 60%");
+        //============================================
+        //--------------------------------------------
+        //---------------------------------------------
+        // login status label
+        //=============================================
+        // Add message label
+        lblLoginMessage = new JLabel("");
+        lblLoginMessage.setFont(new Font("sansserif", Font.BOLD, 14));
+        lblLoginMessage.setForeground(Color.RED); // Default color for errors
+        login.add(lblLoginMessage, "w 60%");
         //===========================================
         //------------------------------------------
         //------------------------------------------
@@ -159,6 +170,30 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
             lblRegisterMessage.setForeground(Color.RED); // Red for failure
         }
         lblRegisterMessage.setText(message);
+    }
+
+    public void setLoginMessage(String message, boolean isSuccess) {
+        if (isSuccess) {
+            lblLoginMessage.setForeground(new Color(34, 139, 34)); // Green for success
+        } else {
+            lblLoginMessage.setForeground(Color.RED); // Red for failure
+        }
+        lblLoginMessage.setText(message);
+    }
+
+    public void disableRegisterButton() {
+        cmdRegister.setEnabled(false);
+    }
+
+    public void disableLoginButton() {
+        cmdLogin.setEnabled(false);
+    }
+
+    public void closeGUI() {
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        if (frame != null) {
+            frame.dispose();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -220,9 +255,13 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         add(register, "card2");
     }// </editor-fold>//GEN-END:initComponents
-    
-    
-    
+
+    /**
+     * LoginStatus enum for user authentication.
+     */
+    public enum LoginStatus {
+        AUTHENTICATED_USER, AUTHENTICATED_ADMIN, INVALID_CREDENTIALS, ALREADY_LOGGED_IN, ALREADY_EXISTS, ALREADY_VOTED, SUCCESS, FAILURE, SHUT_DOWN, LOGOUT_REQUEST, UNKNOWN_COMMAND
+    } // End of LoginStatus enum
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
