@@ -273,7 +273,7 @@ public class EmpowerVoteServer {
             case "LOGIN":
                 return handleLogin(in);
             case "REGISTER":
-                return handleRegistration(in, out);
+                return handleRegistration(in);
             case "VIEW_VOTES":
                 if (HandleData.checkAdmin()) {
                     // Display the candidates to the client
@@ -323,6 +323,12 @@ public class EmpowerVoteServer {
             String response = in.readLine();
             String[] parts = response.split(DELIMITER);
 
+            System.out.println("Received login credentials: " + parts[0]);
+            // Check if the input is valid
+            if (parts.length != 2) {
+                return HandleData.LoginStatus.FAILURE;
+            }
+
             System.out.println("Username: " + parts[0] + " Password: " + parts[1]);
             return HandleData.authenticateUser(parts[0], parts[1]);
 
@@ -339,16 +345,19 @@ public class EmpowerVoteServer {
      * @param out The PrintWriter for sending output to the client.
      * @return The registration status.
      */
-    private static HandleData.LoginStatus handleRegistration(BufferedReader in, PrintWriter out) {
+    private static HandleData.LoginStatus handleRegistration(BufferedReader in) {
         try {
-            out.println("Enter new username:");
-            String newUsername = in.readLine();
-            out.println("Enter new password:");
-            String newPassword = in.readLine();
+            String response = in.readLine();
+            String[] parts = response.split(DELIMITER);
 
-            if (newUsername.isEmpty() || newPassword.isEmpty()) {
+            System.out.println("Received register credentials: " + parts[0]);
+            // Check if the input is valid
+            if (parts.length != 2) {
                 return HandleData.LoginStatus.FAILURE;
             }
+
+            String newUsername = parts[0];
+            String newPassword = parts[1];
 
             boolean result = HandleData.addUser(newUsername, newPassword, 0);
             if (result) {
