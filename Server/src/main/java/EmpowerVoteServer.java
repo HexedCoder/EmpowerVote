@@ -92,7 +92,7 @@ public class EmpowerVoteServer {
         }
 
         // Add shutdown hook to handle Ctrl+C gracefully
-        addShutdownHook();
+        shutdownHook();
 
         try (ServerSocket serverSocket = new ServerSocket(userPort, 50, InetAddress.getByName(userIP))) {
             System.out.println("Server is running and waiting for client connections on 0.0.0.0:12345...");
@@ -133,20 +133,24 @@ public class EmpowerVoteServer {
             System.err.println("Server encountered an error: " + e.getMessage());
         }
 
-        HandleData.logoutAllUsers();
-        HandleData.serverShutdown();
+        shutdownHook();
     } // End of main
 
     /**
      * This method adds a shutdown hook to handle the server shutdown gracefully.
      */
-    private static void addShutdownHook() {
+    private static void shutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Shutdown signal received. Server shutting down...");
             // Send signal to get off blocking accept() call
             gServerShutdown = true;
+
+            System.out.println("Logging out all users...");
+            HandleData.logoutAllUsers();
+            System.out.println("Saving databases...");
+            HandleData.serverShutdown();
         }));
-    } // End of addShutdownHook
+    } // End of shutdownHook
 
     /**
      * This method returns the userMap.
@@ -342,7 +346,6 @@ public class EmpowerVoteServer {
      * This method handles the registration process.
      *
      * @param in  The BufferedReader for reading input from the client.
-     * @param out The PrintWriter for sending output to the client.
      * @return The registration status.
      */
     private static HandleData.LoginStatus handleRegistration(BufferedReader in) {

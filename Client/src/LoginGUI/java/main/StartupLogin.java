@@ -20,6 +20,7 @@ import org.jdesktop.animation.timing.TimingTargetAdapter;
  */
 public class StartupLogin extends javax.swing.JFrame {
 
+    public static final String DELIMITER = ",";
     private MigLayout layout;
     private PanelCover cover;
     private PanelLoginAndRegister loginAndRegister;
@@ -152,11 +153,17 @@ public class StartupLogin extends javax.swing.JFrame {
             return PanelLoginAndRegister.LoginStatus.FAILURE;
         }
 
+        // Ensure no DELIMITER is in username or password
+        if (username.contains(DELIMITER) || password.contains(DELIMITER)) {
+            System.out.println("Username or password cannot contain DELIMITER.");
+            return PanelLoginAndRegister.LoginStatus.FAILURE;
+        }
+
         System.out.println("Attempting login with username: " + username);
         System.out.println("Attempting login with password: " + password);
 
         // Send data to socket
-        serverOut.println("LOGIN\n" + username + "," + password);
+        serverOut.println("LOGIN\n" + username + DELIMITER + password);
 
         try {
             String response = serverIn.readLine();
@@ -182,11 +189,17 @@ public class StartupLogin extends javax.swing.JFrame {
             return;
         }
 
+        // Ensure no DELIMITER is in username or password
+        if (username.contains(DELIMITER) || password.contains(DELIMITER)) {
+            System.out.println("Username or password cannot contain DELIMITER.");
+            return;
+        }
+
         System.out.println("Attempting register with username: " + username);
         System.out.println("Attempting register with password: " + password);
 
         // Send data to socket
-        serverOut.println("REGISTER\n" + username + "," + password);
+        serverOut.println("REGISTER\n" + username + DELIMITER + password);
 
         try {
             String response = serverIn.readLine();

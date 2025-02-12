@@ -213,7 +213,7 @@ public class HandleData {
             System.out.println("Error saving user data.");
         }
 
-        // Save vote data
+        // Save vote
         if (saveVoteData(backupVoteFilename)) {
             // Replace the original file with the backup file
             if (replaceFile(backupVoteFilename, startupVoteFilename)) {
