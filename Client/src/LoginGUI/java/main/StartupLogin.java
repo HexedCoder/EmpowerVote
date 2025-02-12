@@ -10,6 +10,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.DecimalFormat;
+
+import UserGUI.main.MainFrame;
+import UserGUI.menu.Menu;
 import net.miginfocom.swing.MigLayout;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
@@ -120,11 +123,14 @@ public class StartupLogin extends javax.swing.JFrame {
                     case AUTHENTICATED_ADMIN -> {
                         loginAndRegister.setLoginMessage("Admin Login successful!", true);
                         loginAndRegister.disableLoginButton();
+                        MainFrame mainFrame = new MainFrame();
+                        mainFrame.setVisible(true);
 
                     }
                     case AUTHENTICATED_USER -> {
                         loginAndRegister.setLoginMessage("User Login successful!", true);
                         loginAndRegister.disableLoginButton();
+
                     }
                     case INVALID_CREDENTIALS -> loginAndRegister.setLoginMessage("Invalid credentials!", false);
                     case ALREADY_VOTED -> loginAndRegister.setLoginMessage("You have already voted!", false);
