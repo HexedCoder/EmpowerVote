@@ -1,6 +1,0 @@
-Mayor: null
-Council: null
-Governor: null
-Senate: null
-President: null
-Congress: null

@@ -1,7 +1,5 @@
 package LoginGUI.java.main;
 
-import LoginGUI.java.component.PanelCover;
-import LoginGUI.java.component.PanelLoginAndRegister;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -11,8 +9,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.DecimalFormat;
 
-import UserGUI.main.MainFrame;
-import UserGUI.menu.Menu;
+import LoginGUI.java.component.PanelCover;
+import ClientSocketHandler.ClientSocketHandler;
+import LoginGUI.java.component.PanelLoginAndRegister;
 import net.miginfocom.swing.MigLayout;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
@@ -34,8 +33,11 @@ public class StartupLogin extends javax.swing.JFrame {
     private final DecimalFormat df = new DecimalFormat("##0.###");
     private static BufferedReader serverIn;
     private static PrintWriter serverOut;
+    private static ClientSocketHandler socketHandler;
 
-    public StartupLogin(Socket socket) throws IOException {
+    public StartupLogin(ClientSocketHandler socketHandler) throws IOException {
+        StartupLogin.socketHandler = socketHandler;
+        Socket socket = socketHandler.getSocket();
         serverIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         serverOut = new PrintWriter(socket.getOutputStream(), true);
 
@@ -123,8 +125,6 @@ public class StartupLogin extends javax.swing.JFrame {
                     case AUTHENTICATED_ADMIN -> {
                         loginAndRegister.setLoginMessage("Admin Login successful!", true);
                         loginAndRegister.disableLoginButton();
-                        MainFrame mainFrame = new MainFrame();
-                        mainFrame.setVisible(true);
 
                     }
                     case AUTHENTICATED_USER -> {
@@ -169,7 +169,7 @@ public class StartupLogin extends javax.swing.JFrame {
         System.out.println("Attempting login with password: " + password);
 
         // Send data to socket
-        serverOut.println("LOGIN\n" + username + DELIMITER + password);
+        socketHandler.sendMessage("LOGIN\n" + username + DELIMITER + password);
 
         try {
             String response = serverIn.readLine();
@@ -201,8 +201,7 @@ public class StartupLogin extends javax.swing.JFrame {
             return;
         }
 
-        System.out.println("Attempting register with username: " + username);
-        System.out.println("Attempting register with password: " + password);
+        System.out.println("Attempting register with " + username + ":" + password);
 
         // Send data to socket
         serverOut.println("REGISTER\n" + username + DELIMITER + password);
@@ -225,10 +224,7 @@ public class StartupLogin extends javax.swing.JFrame {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
         background = new javax.swing.JLayeredPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);

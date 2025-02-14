@@ -1,5 +1,4 @@
-
-package support;
+package LoginGUI.java.support;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -17,15 +16,15 @@ import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 
+
+/**
+ * Button class that extends JButton with custom animation effects on press.
+ * <p>
+ * The button animates a circular effect when pressed, with configurable effect color.
+ *
+ * @author Marc
+ */
 public class Button extends JButton {
-
-    public Color getEffectColor() {
-        return effectColor;
-    }
-
-    public void setEffectColor(Color effectColor) {
-        this.effectColor = effectColor;
-    }
 
     private Animator animator;
     private int targetSize;
@@ -34,6 +33,27 @@ public class Button extends JButton {
     private float alpha;
     private Color effectColor = new Color(255, 255, 255);
 
+    /**
+     * Gets the effect color for the button press animation.
+     *
+     * @return the effect color
+     */
+    public Color getEffectColor() {
+        return effectColor;
+    } // getEffectColor
+
+    /**
+     * Sets the effect color for the button press animation.
+     *
+     * @param effectColor the color to set for the effect
+     */
+    public void setEffectColor(Color effectColor) {
+        this.effectColor = effectColor;
+    } // setEffectColor
+
+    /**
+     * Constructs a Button with custom animation effects.
+     */
     public Button() {
         setContentAreaFilled(false);
         setBorder(new EmptyBorder(5, 0, 5, 0));
@@ -42,6 +62,7 @@ public class Button extends JButton {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent me) {
+                // Initialize animation parameters when mouse is pressed
                 targetSize = Math.max(getWidth(), getHeight()) * 2;
                 animatSize = 0;
                 pressedPoint = me.getPoint();
@@ -50,8 +71,10 @@ public class Button extends JButton {
                     animator.stop();
                 }
                 animator.start();
-            }
+            } // mousePressed
         });
+
+        // Define the timing behavior for the animation
         TimingTarget target = new TimingTargetAdapter() {
             @Override
             public void timingEvent(float fraction) {
@@ -59,15 +82,22 @@ public class Button extends JButton {
                     alpha = 1 - fraction;
                 }
                 animatSize = fraction * targetSize;
-                repaint();
-            }
+                repaint(); // Trigger repaint during animation
+            } // timingEvent
         };
+
+        // Set up the animator
         animator = new Animator(700, target);
         animator.setAcceleration(0.5f);
         animator.setDeceleration(0.5f);
         animator.setResolution(0);
-    }
+    } // Button
 
+    /**
+     * Custom painting of the button, including the animation effect.
+     *
+     * @param grphcs the graphics context
+     */
     @Override
     protected void paintComponent(Graphics grphcs) {
         int width = getWidth();
@@ -76,14 +106,14 @@ public class Button extends JButton {
         Graphics2D g2 = img.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(getBackground());
-        g2.fillRoundRect(0, 0, width, height, height, height);
+        g2.fillRoundRect(0, 0, width, height, height, height); // Draw rounded rectangle
         if (pressedPoint != null) {
             g2.setColor(effectColor);
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));
-            g2.fillOval((int) (pressedPoint.x - animatSize / 2), (int) (pressedPoint.y - animatSize / 2), (int) animatSize, (int) animatSize);
+            g2.fillOval((int) (pressedPoint.x - animatSize / 2), (int) (pressedPoint.y - animatSize / 2), (int) animatSize, (int) animatSize); // Draw animated circle
         }
         g2.dispose();
         grphcs.drawImage(img, 0, 0, null);
-        super.paintComponent(grphcs);
-    }
-}
+        super.paintComponent(grphcs); // Call the superclass method for default rendering
+    } // paintComponent
+} // Button

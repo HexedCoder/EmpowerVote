@@ -1,4 +1,3 @@
-
 package LoginGUI.java.component;
 
 import java.awt.Color;
@@ -13,16 +12,21 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import javax.swing.*;
 
+import LoginGUI.java.support.ButtonOutLine;
 import net.miginfocom.swing.MigLayout;
-import support.ButtonOutLine;
 
 
 /**
- * CMSC 495 
+ * PanelCover provides the user interface for the login/registration screen with customizable components
+ * such as labels, buttons, and a language dropdown.
+ *
+ * This class includes event handling, custom component layout, and a gradient background.
+ *
+ * CMSC 495
  * @author Marc
  */
 public class PanelCover extends javax.swing.JPanel {
-    
+
     private final DecimalFormat df = new DecimalFormat("##0.###");
     private ActionListener event;
     private MigLayout layout;
@@ -31,29 +35,36 @@ public class PanelCover extends javax.swing.JPanel {
     private JLabel description2;
     private ButtonOutLine button;
     private boolean isLogin;
-    
+
+    /**
+     * Constructs the PanelCover and initializes its components.
+     * Sets the layout, creates labels, buttons, and a language dropdown.
+     */
     public PanelCover() {
-        initComponents();
         setOpaque(false);
         layout = new MigLayout("wrap, fill", "[center]", "push[]25[]10[]25[]push");
         setLayout(layout);
         init();
-    }
+    } // PanelCover
 
+    /**
+     * Initializes the components of the PanelCover.
+     * Sets up the title, description labels, buttons, and the language dropdown.
+     */
     private void init(){
         title = new JLabel("Welcome!");
         title.setFont(new Font("sansserif", 1, 30));
         title.setForeground(new Color(245,245,245));
         add(title);
-        
+
         description1 = new JLabel("Sign in and make your voice heard!");
         description1.setForeground(new Color(245,245,245));
         add(description1);
-        
+
         description2 = new JLabel("Vote today!");
         description2.setForeground(new Color(245,245,245));
         add(description2);
-        
+
         button = new ButtonOutLine();
         button.setBackground(new Color(255,255,255));
         button.setForeground(new Color(255,255,255));
@@ -65,7 +76,7 @@ public class PanelCover extends javax.swing.JPanel {
             }
         });
         add(button, "w 60%, h 40");
-        
+
         //-------------------------------------------------
         // language drop down here
         //=================================================
@@ -88,7 +99,7 @@ public class PanelCover extends javax.swing.JPanel {
                 return label;
             }
         });
-        
+
         add(comboBox, "w 30%, h 8");
         //=================================================
         //-------------------------------------------------
@@ -104,25 +115,12 @@ public class PanelCover extends javax.swing.JPanel {
         add(cmdExit);
         //=================================================
         //-------------------------------------------------
-    }
-    
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    } // init
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-    }// </editor-fold>//GEN-END:initComponents
-    
-    
+    /**
+     * Custom paint method to create a gradient background for the panel.
+     * The gradient goes from blue to white to red.
+     */
     @Override
     protected void paintComponent(Graphics grphcs) {
         Graphics2D g2 = (Graphics2D) grphcs;
@@ -134,9 +132,9 @@ public class PanelCover extends javax.swing.JPanel {
 
         // Create a LinearGradientPaint with multiple color stops for a vertical gradient
         LinearGradientPaint gradient = new LinearGradientPaint(
-            0, 0, 0, getHeight(), // Vertical gradient (top to bottom)
-            new float[]{0.38f, 0.64f, 0.88f}, // Color stops at 38%, 70%, 88%
-            new Color[]{color1, color2, color3} // Corresponding colors
+                0, 0, 0, getHeight(), // Vertical gradient (top to bottom)
+                new float[]{0.38f, 0.64f, 0.88f}, // Color stops at 38%, 70%, 88%
+                new Color[]{color1, color2, color3} // Corresponding colors
         );
 
         // Apply the gradient paint
@@ -145,47 +143,74 @@ public class PanelCover extends javax.swing.JPanel {
 
         // Call the superclass method to maintain proper rendering behavior
         super.paintComponent(grphcs);
-    }
+    } // paintComponent
 
-
-    
+    /**
+     * Adds an event listener for button actions.
+     *
+     * @param event the action listener to be added to the button
+     */
     public void addEvent(ActionListener event){
-        this.event=event;
-    }
-    
+        this.event = event;
+    } // addEvent
+
+    /**
+     * Registers the left alignment with a specified vertical offset.
+     *
+     * @param v the vertical offset value
+     */
     public void registerLeft(double v){
         v = Double.valueOf(df.format(v));
         login(false);
         layout.setComponentConstraints(title, "pad 0 -" + v + "% 0 0");
         layout.setComponentConstraints(description1, "pad 0 -" + v + "% 0 0");
         layout.setComponentConstraints(description2, "pad 0 -" + v + "% 0 0");
-    }
-    
+    } // registerLeft
+
+    /**
+     * Registers the right alignment with a specified vertical offset.
+     *
+     * @param v the vertical offset value
+     */
     public void registerRight(double v){
         v = Double.valueOf(df.format(v));
         login(false);
         layout.setComponentConstraints(title, "pad 0 -" + v + "% 0 0");
         layout.setComponentConstraints(description1, "pad 0 -" + v + "% 0 0");
         layout.setComponentConstraints(description2, "pad 0 -" + v + "% 0 0");
-    }
-    
+    } // registerRight
+
+    /**
+     * Configures the login panel with left alignment and a specified vertical offset.
+     *
+     * @param v the vertical offset value
+     */
     public void loginLeft(double v){
         v = Double.valueOf(df.format(v));
         login(true);
         layout.setComponentConstraints(title, "pad 0 " + v + "% 0 " + v + "%");
         layout.setComponentConstraints(description1, "pad 0 " + v + "% 0 " + v + "%");
         layout.setComponentConstraints(description2, "pad 0 " + v + "% 0 " + v + "%");
+    } // loginLeft
 
-    }
-    
+    /**
+     * Configures the login panel with right alignment and a specified vertical offset.
+     *
+     * @param v the vertical offset value
+     */
     public void loginRight(double v){
         v = Double.valueOf(df.format(v));
         login(true);
         layout.setComponentConstraints(title, "pad 0 " + v + "% 0 " + v + "%");
         layout.setComponentConstraints(description1, "pad 0 " + v + "% 0 " + v + "%");
         layout.setComponentConstraints(description2, "pad 0 " + v + "% 0 " + v + "%");
+    } // loginRight
 
-    }
+    /**
+     * Updates the login state and changes the text of the labels and button accordingly.
+     *
+     * @param login true for login mode, false for registration mode
+     */
     private void login(boolean login){
         if (this.isLogin != login){
             if (login){
@@ -193,7 +218,7 @@ public class PanelCover extends javax.swing.JPanel {
                 description1.setText("Create an Account");
                 description2.setText("in just a few easy steps!");
                 button.setText("Register");
-            }else {
+            } else {
                 title.setText("Welcome!");
                 description1.setText("Sign in and make your voice heard!");
                 description2.setText("Vote today!");
@@ -201,7 +226,5 @@ public class PanelCover extends javax.swing.JPanel {
             }
             this.isLogin = login;
         }
-    }
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
-}
+    } // login
+} // PanelCover
