@@ -16,6 +16,9 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
+
+import javax.swing.*;
+
 /**
  * The StartupLogin class initializes the user interface for login and registration.
  * <p>
@@ -132,6 +135,8 @@ public class StartupLogin extends javax.swing.JFrame {
                         loginAndRegister.setLoginMessage("Admin Login successful!", true);
                         loginAndRegister.disableLoginButton();
 
+                        // Simulated until GUI functional
+                        handleAdmin();
                     }
                     case AUTHENTICATED_USER -> {
                         loginAndRegister.setLoginMessage("User Login successful!", true);
@@ -155,6 +160,45 @@ public class StartupLogin extends javax.swing.JFrame {
             }
         });
     } // End init
+
+    /**
+     * Handles the admin choices.
+     */
+    private void handleAdmin() {
+        System.out.println("Admin Login successful!");
+        String[] options = {"VIEW_VOTES", "LOGOUT_ALL", "SHUTDOWN"};
+
+        // Get user command
+        String command = (String) JOptionPane.showInputDialog(null, "Select an option", "Admin Panel", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+        socketHandler.sendMessage(command);
+        try {
+            command = serverIn.readLine();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        System.out.println("Server response: " + command);
+
+        switch (command) {
+            case "VIEW_VOTES" -> {
+                String line;
+                try {
+                    do {
+                        line = serverIn.readLine();
+                        System.out.println(line);
+                    } while (!line.equals("SUCCESS"));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }l
+            }
+            case "SHUTDOWN" -> {
+                loginAndRegister.setLoginMessage("Server shutdown successful!", true);
+            }
+            default -> {
+                // No action needed
+            }
+        }
+    } // End handleAdmin
 
     private PanelLoginAndRegister.LoginStatus performLogin() {
         String username = loginAndRegister.getLoginUsername();

@@ -281,7 +281,9 @@ public class EmpowerVoteServer {
             case "VIEW_VOTES":
                 if (HandleData.checkAdmin()) {
                     // Display the candidates to the client
+
                     response = handleViewVotes(true);
+
 
                     // Send the candidates to the client
                     out.println(response);
