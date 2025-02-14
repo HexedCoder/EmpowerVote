@@ -96,10 +96,10 @@ public class Button extends JButton {
     /**
      * Custom painting of the button, including the animation effect.
      *
-     * @param grphcs the graphics context
+     * @param graphics the graphics context
      */
     @Override
-    protected void paintComponent(Graphics grphcs) {
+    protected void paintComponent(Graphics graphics) {
         int width = getWidth();
         int height = getHeight();
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -113,7 +113,7 @@ public class Button extends JButton {
             g2.fillOval((int) (pressedPoint.x - animatSize / 2), (int) (pressedPoint.y - animatSize / 2), (int) animatSize, (int) animatSize); // Draw animated circle
         }
         g2.dispose();
-        grphcs.drawImage(img, 0, 0, null);
-        super.paintComponent(grphcs); // Call the superclass method for default rendering
+        graphics.drawImage(img, 0, 0, null);
+        super.paintComponent(graphics); // Call the superclass method for default rendering
     } // paintComponent
 } // Button

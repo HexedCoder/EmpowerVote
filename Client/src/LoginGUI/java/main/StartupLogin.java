@@ -35,6 +35,8 @@ public class StartupLogin extends javax.swing.JFrame {
     private static PrintWriter serverOut;
     private static ClientSocketHandler socketHandler;
 
+    private javax.swing.JLayeredPane background;
+
     public StartupLogin(ClientSocketHandler socketHandler) throws IOException {
         StartupLogin.socketHandler = socketHandler;
         Socket socket = socketHandler.getSocket();
@@ -148,7 +150,7 @@ public class StartupLogin extends javax.swing.JFrame {
                 performRegister();
             }
         });
-    }
+    } // End init
 
     private PanelLoginAndRegister.LoginStatus performLogin() {
         String username = loginAndRegister.getLoginUsername();
@@ -184,7 +186,7 @@ public class StartupLogin extends javax.swing.JFrame {
         } catch (IOException e) {
             return PanelLoginAndRegister.LoginStatus.FAILURE;
         }
-    }
+    } // End performLogin
 
     private void performRegister() {
         String username = loginAndRegister.getRegisterUsername();
@@ -222,7 +224,7 @@ public class StartupLogin extends javax.swing.JFrame {
         } catch (IOException e) {
             System.err.println("Error receiving register response: " + e.getMessage());
         }
-    }
+    } // End performRegister
 
     private void initComponents() {
         background = new javax.swing.JLayeredPane();
@@ -257,10 +259,5 @@ public class StartupLogin extends javax.swing.JFrame {
 
         pack();
         setLocationRelativeTo(null);
-    }// </editor-fold>//GEN-END:initComponents
-
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLayeredPane background;
-    // End of variables declaration//GEN-END:variables
-}
+    }// End initComponents
+} // End StartupLogin
