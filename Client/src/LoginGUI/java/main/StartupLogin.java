@@ -17,6 +17,10 @@ import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 /**
+ * The StartupLogin class initializes the user interface for login and registration.
+ * <p>
+ * Usage: StartupLogin
+ *
  * CMSC 495
  * @author Marc
  */
