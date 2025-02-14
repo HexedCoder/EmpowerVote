@@ -134,7 +134,7 @@ public class EmpowerVoteServer {
         }
 
         shutdownHook();
-    } // End of main
+    } // End main
 
     /**
      * This method adds a shutdown hook to handle the server shutdown gracefully.
@@ -150,7 +150,7 @@ public class EmpowerVoteServer {
             System.out.println("Saving databases...");
             HandleData.serverShutdown();
         }));
-    } // End of shutdownHook
+    } // End shutdownHook
 
     /**
      * This method returns the userMap.
@@ -162,7 +162,7 @@ public class EmpowerVoteServer {
         synchronized (userMapMutex) {
             return userMap;
         }
-    }
+    } // End getUserMap
 
     /**
      * This method returns the candidateMap.
@@ -174,7 +174,7 @@ public class EmpowerVoteServer {
         synchronized (userMapMutex) {
             return candidateMap;
         }
-    }
+    } // End getCandidateMap
 
     /**
      * This method adds a user to the userMap.
@@ -185,7 +185,7 @@ public class EmpowerVoteServer {
         synchronized (userMapMutex) {
             userMap.put(newUser.name, newUser);
         }
-    }
+    } // End addUserToMap
 
     /**
      * This method retrieves the InputStream from a file located in the directory of the running JAR.
@@ -208,7 +208,7 @@ public class EmpowerVoteServer {
 
         // Try to access the file as an InputStream
         return new FileInputStream(file);
-    } // End of getDataInputStream
+    } // End getDataInputStream
 
     /**
      * This method handles the client connection.
@@ -218,7 +218,8 @@ public class EmpowerVoteServer {
     private static void handleClient(Socket clientSocket) {
         try (
                 // Initialize input and output streams
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
             String inputLine;
 
             // Read input from client
@@ -229,7 +230,6 @@ public class EmpowerVoteServer {
                 HandleData.LoginStatus response = processClientInput(inputLine, in, out);
 
                 // Print the response to the server
-
                 if (response == HandleData.LoginStatus.LOGOUT_REQUEST) {
                     continue;
                 }
@@ -261,7 +261,7 @@ public class EmpowerVoteServer {
                 System.err.println("Error closing client socket: " + e.getMessage());
             }
         }
-    } // End of handleClient
+    } // End handleClient
 
     /**
      * This method processes the client input and returns the appropriate response.
@@ -314,7 +314,7 @@ public class EmpowerVoteServer {
             default:
                 return HandleData.LoginStatus.UNKNOWN_COMMAND;
         }
-    } // End of processClientInput
+    } // End processClientInput
 
     /**
      * This method handles the login process.
@@ -329,7 +329,7 @@ public class EmpowerVoteServer {
 
             System.out.println("Received login credentials: " + parts[0]);
             // Check if the input is valid
-            if (parts.length != 2) {
+            if (2 != parts.length) {
                 return HandleData.LoginStatus.FAILURE;
             }
 
@@ -340,7 +340,7 @@ public class EmpowerVoteServer {
             System.err.println("Error reading login credentials: " + e.getMessage());
             return HandleData.LoginStatus.FAILURE;
         }
-    } // End of handleLogin
+    } // End handleLogin
 
     /**
      * This method handles the registration process.
@@ -371,7 +371,7 @@ public class EmpowerVoteServer {
         } catch (IOException e) {
             return HandleData.LoginStatus.FAILURE;
         }
-    } // End of handleRegistration
+    } // End handleRegistration
 
     /**
      * This method handles the view votes process.
@@ -395,7 +395,7 @@ public class EmpowerVoteServer {
         StringBuilder voteInfo = getStringBuilder(isAdmin, sortedCandidates);
 
         return voteInfo.toString();
-    } // End of handleViewVotes
+    } // End handleViewVotes
 
     /**
      * This method constructs a StringBuilder with the vote information.
@@ -417,7 +417,7 @@ public class EmpowerVoteServer {
             voteInfo.append(String.format("\tCandidate: %s%s\n", candidate.name, isAdmin ? ", Votes: " + candidate.votes : ""));
         }
         return voteInfo;
-    } // End of getStringBuilder
+    } // End getStringBuilder
 
     /**
      * This method handles the vote process.
@@ -436,12 +436,12 @@ public class EmpowerVoteServer {
                 return HandleData.LoginStatus.FAILURE;
             }
         }
-    } // End of voteForUser
+    } // End voteForUser
 
     /**
      * This method handles the logout process.
      */
     private static void handleLogout() {
         HandleData.logoutUser();
-    }
-} // End of main
+    } // End handleLogout
+} // End EmpowerVoteServer

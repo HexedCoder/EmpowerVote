@@ -35,9 +35,10 @@ public class HandleData {
 
         startupUserFilename = EmpowerVoteServer.USER_DATA_FILE;
         return StartupStatus.SUCCESS;
-    } // End of serverStartup
+    } // End serverStartup
 
-    /* Initializes the server with vote data.
+    /**
+     * Initializes the server with vote data.
      *
      * @param inputStream The input stream containing vote data.
      * @return The status of the vote startup.
@@ -54,7 +55,7 @@ public class HandleData {
 
         startupVoteFilename = EmpowerVoteServer.VOTE_DATA_FILE;
         return StartupStatus.SUCCESS;
-    } // End of voteStartup
+    } // End voteStartup
 
     /**
      * Authenticates a user with the provided username and password.
@@ -83,15 +84,21 @@ public class HandleData {
         System.out.println("Invalid username");
 
         return LoginStatus.INVALID_CREDENTIALS;
-    } // End of authenticateUser
+    } // End authenticateUser
 
     /**
      * Logs out the current user.
      */
     public static void logoutUser() {
         if (null != currentUser) logoutUser(currentUser.name);
-    } // End of logoutUser
+    } // End logoutUser
 
+    /**
+     * Handles the vote process for a user.
+     *
+     * @param inputBuffer The BufferedReader to read client input.
+     * @return The login status after processing the vote.
+     */
     static HandleData.LoginStatus handleVote(BufferedReader inputBuffer) {
         try {
             // Get the chosen candidate from the client
@@ -110,7 +117,7 @@ public class HandleData {
         } catch (IOException e) {
             return HandleData.LoginStatus.FAILURE;
         }
-    } // End of handleVote
+    } // End handleVote
 
     /**
      * Checks if the current user is an admin.
@@ -119,7 +126,7 @@ public class HandleData {
      */
     public static boolean checkAdmin() {
         return currentUser != null && currentUser.userLevel == 1;
-    } // End of logoutUser
+    } // End checkAdmin
 
     /**
      * Logs out a user with the provided username.
@@ -133,21 +140,18 @@ public class HandleData {
         if (user != null) {
             user.loggedIn = false;
         }
-    } // End of logoutUser
+    } // End logoutUser
 
     /**
      * Logs out all users.
      */
     public static void logoutAllUsers() {
-        // Get the user map
         Map<String, HandleData.User> users = EmpowerVoteServer.getUserMap();
 
-        // Check if the user map is not null
         if (users != null) {
-            // Iterate through all users and set their loggedIn status to false
             users.values().forEach(user -> user.loggedIn = false);
         }
-    } // End of logoutAllUsers
+    } // End logoutAllUsers
 
     /**
      * Adds a new user with the provided username, password, and user level.
@@ -167,7 +171,7 @@ public class HandleData {
 
         EmpowerVoteServer.addUserToMap(newUser);
         return true;
-    } // End of addUser
+    } // End addUser
 
     /**
      * Get the password hash of the provided password.
@@ -189,7 +193,7 @@ public class HandleData {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error hashing password", e);
         }
-    } // End of getPasswordHash
+    } // End getPasswordHash
 
     /**
      * Shuts down the server and saves user and vote data.
@@ -205,7 +209,6 @@ public class HandleData {
 
         // Save user data
         if (saveUserData(backupUserFilename)) {
-            // Replace the original file with the backup file
             if (replaceFile(backupUserFilename, startupUserFilename)) {
                 System.out.println("Error updating user data file.");
             }
@@ -215,14 +218,13 @@ public class HandleData {
 
         // Save vote
         if (saveVoteData(backupVoteFilename)) {
-            // Replace the original file with the backup file
             if (replaceFile(backupVoteFilename, startupVoteFilename)) {
                 System.out.println("Error updating vote data file.");
             }
         } else {
             System.out.println("Error saving vote data.");
         }
-    } // End of serverShutdown
+    } // End serverShutdown
 
     /**
      * Replaces the original file with the backup file.
@@ -235,20 +237,18 @@ public class HandleData {
         File backupFile = new File(backupFileName);
         File originalFile = new File(originalFileName);
 
-        // Delete the original file if it exists
         if (originalFile.exists() && !originalFile.delete()) {
             System.out.println("Failed to delete the original file: " + originalFileName);
             return true;
         }
 
-        // Rename the backup file to the original file
         if (!backupFile.renameTo(originalFile)) {
             System.out.println("Failed to rename backup file: " + backupFileName);
             return true;
         }
 
         return false;
-    } // End of replaceFile
+    } // End replaceFile
 
     /**
      * Gets the list of candidates and their votes.
@@ -260,14 +260,13 @@ public class HandleData {
         Map<String, HandleData.Candidate> candidateMap = EmpowerVoteServer.getCandidateMap();
         if (isAdmin) return candidateMap;
 
-        // Hide the votes from the user by making a copy of the candidate map
         Map<String, Candidate> tempMap = new HashMap<>();
         for (Candidate candidate : candidateMap.values()) {
             candidate = new Candidate(candidate.name, candidate.position, 0);
             tempMap.put(candidate.name, candidate);
         }
         return tempMap;
-    } // End of getVotes
+    } // End getVotes
 
     /**
      * Gets the list of users.
@@ -280,7 +279,7 @@ public class HandleData {
             case "admin" -> 1;
             default -> -1;
         };
-    } // End of parseUserLevel
+    } // End parseUserLevel
 
 
     /**
@@ -318,7 +317,7 @@ public class HandleData {
             System.out.printf("Error loading user data: %s%n", e.getMessage());
         }
         return users;
-    } // End of loadUserData
+    } // End loadUserData
 
     /**
      * Loads vote data from a file.
@@ -351,7 +350,7 @@ public class HandleData {
             System.out.printf("Error loading vote data: %s%n", e.getMessage());
         }
         return candidates;
-    } // End of loadVoteData
+    } // End loadVoteData
 
     /**
      * Saves user data to a file.
@@ -370,7 +369,7 @@ public class HandleData {
             return false;
         }
         return true;
-    } // End of saveUserData
+    } // End saveUserData
 
     /**
      * Saves vote data to a file.
@@ -395,21 +394,21 @@ public class HandleData {
             return false;
         }
         return true;
-    } // End of saveVoteData
+    } // End saveVoteData
 
     /**
      * LoginStatus enum for user authentication.
      */
     public enum LoginStatus {
         AUTHENTICATED_USER, AUTHENTICATED_ADMIN, INVALID_CREDENTIALS, ALREADY_LOGGED_IN, ALREADY_EXISTS, ALREADY_VOTED, SUCCESS, FAILURE, SHUT_DOWN, LOGOUT_REQUEST, UNKNOWN_COMMAND
-    } // End of LoginStatus enum
+    } // End LoginStatus enum
 
     /**
      * StartupStatus enum for server startup.
      */
     public enum StartupStatus {
         SUCCESS, FAILURE
-    } // End of StartupStatus enum
+    } // End StartupStatus enum
 
     /**
      * User class to store user data.
@@ -431,7 +430,7 @@ public class HandleData {
             this.userVoted = userVoted;
             this.loggedIn = loggedIn;
         }
-    } // End of User class
+    } // End User class
 
     /**
      * Candidate class to store candidate data.
@@ -448,7 +447,6 @@ public class HandleData {
             if (DEBUG) {
                 System.out.printf("New Candidate: %n\tName: %s%n\tPosition: %s%n\tVotes: %d%n", name, position, votes);
             }
-        } // End of Candidate constructor
-
-    } // End of Candidate class
-} // End of main.java.HandleData class
+        } // End Candidate constructor
+    } // End Candidate class
+} // End HandleData class
