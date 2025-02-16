@@ -48,6 +48,7 @@ public class EmpowerVoteClient {
 
                 StartupLogin login = new StartupLogin(socketHandler);
                 login.setVisible(true);
+                new HandleGUI(socketHandler,login);
 
                 // Wait until the GUI is closed
                 while (ClientSocketHandler.isRunning()) {
