@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.DecimalFormat;
 
+import AdminGUI.java.main.StartupAdmin;
 import LoginGUI.java.component.PanelCover;
 import ClientSocketHandler.ClientSocketHandler;
 import LoginGUI.java.component.PanelLoginAndRegister;
@@ -135,13 +136,25 @@ public class StartupLogin extends javax.swing.JFrame {
                         loginAndRegister.setLoginMessage("Admin Login successful!", true);
                         loginAndRegister.disableLoginButton();
 
-                        // Simulated until GUI functional
-                        handleAdmin();
+                        StartupAdmin startupAdmin = null;
+                        try {
+                            startupAdmin = new StartupAdmin(socketHandler);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        startupAdmin.setVisible(true);
                     }
                     case AUTHENTICATED_USER -> {
                         loginAndRegister.setLoginMessage("User Login successful!", true);
                         loginAndRegister.disableLoginButton();
 
+                        UserGUI.java.main.StartupUser startupUser = null;
+                        try {
+                            startupUser = new UserGUI.java.main.StartupUser(socketHandler);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        startupUser.setVisible(true);
                     }
                     case INVALID_CREDENTIALS -> loginAndRegister.setLoginMessage("Invalid credentials!", false);
                     case ALREADY_VOTED -> loginAndRegister.setLoginMessage("You have already voted!", false);
@@ -183,13 +196,18 @@ public class StartupLogin extends javax.swing.JFrame {
             case "VIEW_VOTES" -> {
                 String line;
                 try {
-                    do {
-                        line = serverIn.readLine();
-                        System.out.println(line);
-                    } while (!line.equals("SUCCESS"));
+                    while ((line = serverIn.readLine()) != null) {
+                        if (line.equals("END_OF_DATA")) {
+                            break;
+                        } else {
+                            // Display votes
+                            System.out.println(line);
+                        }
+                    }
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
-                }l
+                }
+                System.out.println("Votes displayed.");
             }
             case "SHUTDOWN" -> {
                 loginAndRegister.setLoginMessage("Server shutdown successful!", true);

@@ -395,7 +395,7 @@ public class EmpowerVoteServer {
         sortedCandidates.sort(Comparator.comparing((HandleData.Candidate c) -> c.position).thenComparing(c -> c.name));
 
         StringBuilder voteInfo = getStringBuilder(isAdmin, sortedCandidates);
-
+        System.out.println(voteInfo.toString());
         return voteInfo.toString();
     } // End handleViewVotes
 
