@@ -137,10 +137,12 @@ public class StartupLogin extends javax.swing.JFrame {
 
                         // Simulated until GUI functional
                         handleAdmin();
+                        //EmpowerVoteClient.HandleGUI.setUserStatus(user);
                     }
                     case AUTHENTICATED_USER -> {
                         loginAndRegister.setLoginMessage("User Login successful!", true);
                         loginAndRegister.disableLoginButton();
+                        EmpowerVoteClient.HandleGUI.setUserStatus(user);
 
                     }
                     case INVALID_CREDENTIALS -> loginAndRegister.setLoginMessage("Invalid credentials!", false);
