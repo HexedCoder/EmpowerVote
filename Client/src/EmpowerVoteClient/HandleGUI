@@ -1,0 +1,47 @@
+package EmpowerVoteClient;
+
+import ClientSocketHandler.ClientSocketHandler;
+import LoginGUI.java.main.StartupLogin;
+import UserGUI.java.main.StartupUser;
+import java.io.IOException;
+
+/**
+ *
+ * @author Marc
+ */
+public class HandleGUI {
+    private static boolean userStatus;
+    private static StartupLogin login;
+    private static StartupUser userGUI;
+
+    public HandleGUI(boolean user) {
+        userStatus = user;
+    }
+    
+    public HandleGUI(ClientSocketHandler socketHandler, StartupLogin startupLogin) throws IOException {
+        //login = new StartupLogin(socketHandler);
+        
+        login = startupLogin;
+        //login.setVisible(true);
+        userGUI = new StartupUser(socketHandler);
+        userGUI.setVisible(false);
+    }
+
+    public static void setUserStatus(boolean status) {
+        userStatus = status;
+        setNextGUI(); // Automatically update UI when status changes
+    }
+
+    private static void setNextGUI() {
+        //if (login != null && userGUI != null) { // Ensure GUI objects are initialized
+            if (userStatus) {
+                login.setVisible(false);
+                userGUI.setVisible(true);
+            } else {
+                //login.setVisible(false);
+                // adminGUI.setVisible(true); 
+            }
+        }
+    //}
+    
+}
