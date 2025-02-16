@@ -14,9 +14,7 @@ public class HandleGUI {
     private static StartupLogin login;
     private static StartupUser userGUI;
 
-    public HandleGUI(boolean user) {
-        userStatus = user;
-    }
+   
     
     public HandleGUI(ClientSocketHandler socketHandler, StartupLogin startupLogin) throws IOException {
         //login = new StartupLogin(socketHandler);
