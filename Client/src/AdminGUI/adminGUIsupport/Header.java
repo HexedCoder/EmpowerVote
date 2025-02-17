@@ -61,7 +61,7 @@ public class Header extends javax.swing.JPanel {
         System.out.println(System.getProperty("user.dir"));
 
         // Set the image for the label
-        jLabel1.setIcon(new javax.swing.ImageIcon("Client/src/resources/banner6.png")); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon("resources/banner6.png")); // NOI18N
 
         // Layout the components
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

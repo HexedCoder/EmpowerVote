@@ -33,6 +33,7 @@ public class PanelUpdater {
      * @param senatorPanel The SenatorPanel instance.
      * @param presidentPanel The PresidentPanel instance.
      * @param congressPanel The CongressPanel instance.
+     *
      */
     public PanelUpdater(StartupAdmin aThis, MayorPanel mayorPanel, CouncilPanel councilPanel,
                         GovernorPanel governorPanel, SenatorPanel senatorPanel,

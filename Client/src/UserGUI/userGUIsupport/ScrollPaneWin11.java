@@ -1,4 +1,4 @@
-package UserGUI.java.userGUIsupport;
+package userGUIsupport;
 
 import java.awt.Container;
 import java.awt.EventQueue;

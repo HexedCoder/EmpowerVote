@@ -1,4 +1,4 @@
-package UserGUI.java.menu;
+package menu;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -10,8 +10,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import UserGUI.java.userGUIsupport.RippleEffect;
-import UserGUI.java.userGUIsupport.ShadowRenderer;
+import userGUIsupport.RippleEffect;
+import userGUIsupport.ShadowRenderer;
 
 /**
  * MenuItem class represents an individual item in the menu.

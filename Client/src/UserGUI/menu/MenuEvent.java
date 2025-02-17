@@ -1,4 +1,4 @@
-package UserGUI.java.menu;
+package menu;
 
 /**
  * Interface for handling menu item selection events.

@@ -1,5 +1,5 @@
 
-package UserGUI.java.userGUIcomponent;
+package userGUIcomponent;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -7,7 +7,12 @@ import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import UserGUI.java.userGUIsupport.Button;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import userGUIsupport.Button;
+
+import static LoginGUI.java.main.StartupLogin.serverOut;
 
 /**
  * ReviewAndSubmit panel for reviewing and submitting election votes.
@@ -76,7 +81,6 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 areYouSure.setVisible(false);
-                sendResults(evt);
             }
         });
         confirm.setVisible(true);
@@ -94,7 +98,18 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
         cmd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                submitResults(evt);
+                if (submitResults(evt)) {
+                    // return array of names to the main class
+                    cmd.setText("THANK YOU!");
+                    // Create array of selected candidates
+                    String votingString = mayorFinal + "\t" + councilFinal + "\t" + governorFinal +
+                            "\t" + senatorFinal + "\t" + presidentFinal + "\t" +
+                            congressFinal;
+
+                    serverOut.println(votingString);
+                    cmd.setEnabled(false);
+                } else
+                    cmd.setText("Vote then Submit");
             }
         });
 
@@ -158,29 +173,13 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
     /**
      * Displays the confirmation dialog for submitting the results.
      */
-    public void submitResults(ActionEvent evt) {
-        areYouSure.setVisible(true);
-    } // End submitResults
-
-    /**
-     * Sends the results to a file after confirmation.
-     */
-    public void sendResults(ActionEvent evt) {
-        // Define file path
-        String filePath = "src/main/resources/Results.txt";
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            writer.write("Mayor: " + mayorFinal + "\n");
-            writer.write("Council: " + councilFinal + "\n");
-            writer.write("Governor: " + governorFinal + "\n");
-            writer.write("Senate: " + senatorFinal + "\n");
-            writer.write("President: " + presidentFinal + "\n");
-            writer.write("Congress: " + congressFinal + "\n");
-        } catch (IOException e) {
+    public boolean submitResults(ActionEvent evt) {
+        if (mayorFinal == null || councilFinal == null || governorFinal == null || senatorFinal == null || presidentFinal == null || congressFinal == null) {
+            return false;
         }
-
-        congratsPanel.setVisible(true);
-    } // End sendResults
+        areYouSure.setVisible(true);
+        return true;
+    } // End submitResults
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -224,7 +223,7 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
             jLabel3.setBounds(0, 260, 730, 80);
 
             jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-            jLabel12.setIcon(new javax.swing.ImageIcon("Client\\src\\AdminGUI\\resources\\images\\vote background.png")); // NOI18N
+            jLabel12.setIcon(new javax.swing.ImageIcon("resources/vote background.png")); // NOI18N
             congratsPanel.add(jLabel12);
             jLabel12.setBounds(0, 0, 730, 550);
 

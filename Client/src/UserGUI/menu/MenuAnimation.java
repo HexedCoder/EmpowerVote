@@ -1,4 +1,4 @@
-package UserGUI.java.menu;
+package menu;
 
 import java.awt.Component;
 import net.miginfocom.swing.MigLayout;

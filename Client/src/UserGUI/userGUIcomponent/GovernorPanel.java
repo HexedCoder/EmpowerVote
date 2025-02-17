@@ -1,4 +1,4 @@
-package UserGUI.java.userGUIcomponent;
+package userGUIcomponent;
 
 /**
  * GovernorPanel class provides the election interface for the Governor race.

@@ -1,4 +1,4 @@
-package UserGUI.java.menu;
+package menu;
 
 import java.awt.Color;
 import java.awt.Component;

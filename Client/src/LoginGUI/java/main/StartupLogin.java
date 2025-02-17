@@ -6,10 +6,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.text.DecimalFormat;
 
 import AdminGUI.main.StartupAdmin;
+import main.StartupUser;
 import LoginGUI.java.component.PanelCover;
 import ClientSocketHandler.ClientSocketHandler;
 import LoginGUI.java.component.PanelLoginAndRegister;
@@ -40,7 +42,7 @@ public class StartupLogin extends javax.swing.JFrame {
     private final double loginSize=60;
     private final DecimalFormat df = new DecimalFormat("##0.###");
     private static BufferedReader serverIn;
-    private static PrintWriter serverOut;
+    public static PrintWriter serverOut;
     private static ClientSocketHandler socketHandler;
 
     private javax.swing.JLayeredPane background;
@@ -142,7 +144,7 @@ public class StartupLogin extends javax.swing.JFrame {
                         try {
                             String line;
                             while (!(line = serverIn.readLine()).equals("SUCCESS")) {
-                                if (line.equals("END_OF_DATA")) {
+                                if (line.equals("FAILURE")) {
                                     break;
                                 } else {
                                     voteStats.append(line).append("\n");
@@ -151,19 +153,28 @@ public class StartupLogin extends javax.swing.JFrame {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                        StartupAdmin startupAdmin = new StartupAdmin(voteStats.toString());
+                        StartupAdmin startupAdmin = new StartupAdmin(voteStats.toString(), serverOut);
                         startupAdmin.setVisible(true);
                     }
                     case AUTHENTICATED_USER -> {
                         loginAndRegister.setLoginMessage("User Login successful!", true);
                         loginAndRegister.disableLoginButton();
+                        StringBuilder userStats = new StringBuilder();
 
-                        UserGUI.java.main.StartupUser startupUser = null;
+                        socketHandler.sendMessage("VOTE");
                         try {
-                            startupUser = new UserGUI.java.main.StartupUser(socketHandler);
+                            String line;
+                            while (!(line = serverIn.readLine()).equals("SUCCESS")) {
+                                if (line.equals("FAILURE")) {
+                                    break;
+                                } else {
+                                    userStats.append(line).append("\n");
+                                }
+                            }
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
+                        StartupUser startupUser = new StartupUser(userStats.toString());
                         startupUser.setVisible(true);
                     }
                     case INVALID_CREDENTIALS -> loginAndRegister.setLoginMessage("Invalid credentials!", false);

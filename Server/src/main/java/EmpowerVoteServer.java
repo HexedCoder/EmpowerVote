@@ -415,7 +415,7 @@ public class EmpowerVoteServer {
 
                 currentPosition = candidate.position;
             }
-            voteInfo.append(String.format("\t%s\t%s", candidate.name, isAdmin ? candidate.votes : ""));
+            voteInfo.append(String.format("\t%s%s", candidate.name, isAdmin ? "\t" +candidate.votes : ""));
         }
         return voteInfo;
     } // End getStringBuilder

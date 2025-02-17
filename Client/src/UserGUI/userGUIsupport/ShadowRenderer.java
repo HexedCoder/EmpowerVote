@@ -1,4 +1,4 @@
-package UserGUI.java.userGUIsupport;
+package userGUIsupport;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;

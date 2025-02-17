@@ -58,13 +58,13 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         // Username text field
         txtRegister = new MyTextField();
-        txtRegister.setPrefixIcon(new ImageIcon("src/resources/user.png"));
+        txtRegister.setPrefixIcon(new ImageIcon("resources/user.png"));
         txtRegister.setHint("username");
         register.add(txtRegister, "w 60%");
 
         // Password text field
         txtRegisterPass = new MyPasswordField();
-        txtRegisterPass.setPrefixIcon(new ImageIcon("src/resources/pass.png"));
+        txtRegisterPass.setPrefixIcon(new ImageIcon("resources/pass.png"));
         txtRegisterPass.setHint("password");
         register.add(txtRegisterPass, "w 60%");
 
@@ -94,13 +94,13 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         // Username text field
         txtLogin = new MyTextField();
-        txtLogin.setPrefixIcon(new ImageIcon("src/resources/user.png"));
+        txtLogin.setPrefixIcon(new ImageIcon("resources/user.png"));
         txtLogin.setHint("username");
         login.add(txtLogin, "w 60%");
 
         // Password text field
         txtLoginPass = new MyPasswordField();
-        txtLoginPass.setPrefixIcon(new ImageIcon("src/resources/pass.png"));
+        txtLoginPass.setPrefixIcon(new ImageIcon("resources/pass.png"));
         txtLoginPass.setHint("password");
         login.add(txtLoginPass, "w 60%");
 
@@ -257,7 +257,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         jLabel1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon("images/banner.png")); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon("resources/banner.png")); // NOI18N
 
         javax.swing.GroupLayout loginLayout = new javax.swing.GroupLayout(login);
         login.setLayout(loginLayout);

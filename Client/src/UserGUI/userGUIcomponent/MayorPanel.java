@@ -1,11 +1,9 @@
-package UserGUI.java.userGUIcomponent;
-
-import UserGUI.java.userGUIcomponent.ReviewAndSubmit;
+package userGUIcomponent;
 
 /**
- * PresidentPanel class provides the election interface for the President race.
+ * MayorPanel class provides the election interface for the Mayor race.
  */
-public class PresidentPanel extends javax.swing.JPanel {
+public class MayorPanel extends javax.swing.JPanel {
 
     // Instance variables
     private ReviewAndSubmit reviewAndSubmit;
@@ -16,11 +14,11 @@ public class PresidentPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
 
     /**
-     * Creates new form PresidentPanel
+     * Creates new form MayorPanel
      */
-    public PresidentPanel() {
+    public MayorPanel() {
         initComponents();
-    } // End PresidentPanel constructor
+    } // End MayorPanel constructor
 
     /**
      * Sets the Review and Submit instance for this panel.
@@ -65,9 +63,10 @@ public class PresidentPanel extends javax.swing.JPanel {
         Candidate2 = new javax.swing.JRadioButton();
         Candidate3 = new javax.swing.JRadioButton();
 
+        jLabel1.setBackground(new java.awt.Color(204, 204, 204));
         jLabel1.setFont(new java.awt.Font("SansSerif", 1, 48)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("President");
+        jLabel1.setText("City Mayor");
         jLabel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
 
         Candidate1.setBackground(new java.awt.Color(250, 250, 250));
@@ -145,26 +144,26 @@ public class PresidentPanel extends javax.swing.JPanel {
                                         .addComponent(Candidate3)
                                         .addContainerGap(204, Short.MAX_VALUE)))
         );
-    }// </editor-fold>//GEN-END:initComponents
+    } // End initComponents
 
     /**
      * Handles the action when Candidate1 is selected.
      */
     private void Candidate1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Candidate1ActionPerformed
-        reviewAndSubmit.updatePresident(Candidate1.getText()); // Call instance method
+        reviewAndSubmit.updateMayor(Candidate1.getText()); // Call instance method
     } // End Candidate1ActionPerformed
 
     /**
      * Handles the action when Candidate2 is selected.
      */
     private void Candidate2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Candidate2ActionPerformed
-        reviewAndSubmit.updatePresident(Candidate2.getText()); // Call instance method
+        reviewAndSubmit.updateMayor(Candidate2.getText()); // Call instance method
     } // End Candidate2ActionPerformed
 
     /**
      * Handles the action when Candidate3 is selected.
      */
     private void Candidate3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Candidate3ActionPerformed
-        reviewAndSubmit.updatePresident(Candidate3.getText()); // Call instance method
+        reviewAndSubmit.updateMayor(Candidate3.getText()); // Call instance method
     } // End Candidate3ActionPerformed
-} // End PresidentPanel
+} // End MayorPanel

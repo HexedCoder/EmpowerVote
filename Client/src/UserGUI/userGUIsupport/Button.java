@@ -1,4 +1,4 @@
-package UserGUI.java.userGUIsupport;
+package userGUIsupport;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;

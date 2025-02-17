@@ -45,14 +45,23 @@ public class StartupAdmin extends javax.swing.JFrame {
     // Vote Variables
     private String voteData;
 
+    // Socket Variables
+    private PrintWriter serverOut;
+
     /**
      * Constructor for StartupAdmin.
      * Initializes the components and sets up the socket connection.
      *
      * @param voteString The vote data string.
+     * @param serverOut  The PrintWriter for the server connection.
      */
-    public StartupAdmin(String voteString) {
+    public StartupAdmin(String voteString, PrintWriter serverOut) {
         voteData = voteString;
+        this.serverOut = serverOut;
+
+        if (voteData.equals("null") || (serverOut == null)) {
+            return;
+        }
 
         initComponents();
 
@@ -69,7 +78,6 @@ public class StartupAdmin extends javax.swing.JFrame {
 
         // Update panels from file and pass each relevant panel
         PanelUpdater panelUpdater = new PanelUpdater(this, mayorPanel, councilPanel, governorPanel, senatorPanel, presidentPanel, congressPanel);
-        System.out.println(System.getProperty("user.dir"));
         panelUpdater.updatePanelsFromString(this.voteData);
 
         menu2.setEvent(new MenuEvent() {

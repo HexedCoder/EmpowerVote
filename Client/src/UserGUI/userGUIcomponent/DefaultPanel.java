@@ -1,4 +1,4 @@
-package UserGUI.java.userGUIcomponent;
+package userGUIcomponent;
 
 /**
  * DefaultPanel class provides a welcome message and instructions for users

@@ -1,23 +1,21 @@
-package UserGUI.java.main;
+package main;
 
-import ClientSocketHandler.ClientSocketHandler;
-import UserGUI.java.userGUIcomponent.CongressPanel;
-import UserGUI.java.userGUIcomponent.CouncilPanel;
-import UserGUI.java.userGUIcomponent.DefaultPanel;
-import UserGUI.java.userGUIcomponent.GovernorPanel;
-import UserGUI.java.userGUIcomponent.MayorPanel;
-import UserGUI.java.userGUIcomponent.PresidentPanel;
-import UserGUI.java.userGUIcomponent.ReviewAndSubmit;
-import UserGUI.java.userGUIcomponent.SenatorPanel;
-import UserGUI.java.menu.MenuEvent;
-import UserGUI.java.userGUIsupport.PanelUpdater;
+import menu.Menu;
+import userGUIcomponent.CongressPanel;
+import userGUIcomponent.CouncilPanel;
+import userGUIcomponent.DefaultPanel;
+import userGUIcomponent.GovernorPanel;
+import userGUIcomponent.MayorPanel;
+import userGUIcomponent.PresidentPanel;
+import userGUIcomponent.ReviewAndSubmit;
+import userGUIcomponent.SenatorPanel;
+import menu.MenuEvent;
+import userGUIsupport.PanelUpdater;
+import userGUIsupport.Header;
+import userGUIsupport.ScrollPaneWin11;
 
 import java.awt.Component;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 
 /**
  * StartupUser is the main class responsible for the user interface,
@@ -36,28 +34,22 @@ public class StartupUser extends javax.swing.JFrame {
 
     // UI components
     private javax.swing.JPanel body;
-    private UserGUI.java.userGUIsupport.Header header1;
+    private Header header1;
     private javax.swing.JPanel jPanel1;
-    private UserGUI.java.menu.Menu menu2;
-    private UserGUI.java.userGUIsupport.ScrollPaneWin11 scrollPaneWin111;
+    private Menu menu2;
+    private ScrollPaneWin11 scrollPaneWin111;
 
     // Socket communication components
-    private static BufferedReader serverIn;
-    private static PrintWriter serverOut;
-    private static ClientSocketHandler socketHandler;
+    private String userString;
 
     /**
      * Initializes the StartupUser interface, establishes the socket connection,
      * and sets up the initial UI and panels.
      *
-     * @param socketHandler The socket handler to manage server communication.
-     * @throws IOException If an I/O error occurs while initializing the connection.
+     * @param userString String for the user data.
      */
-    public StartupUser(ClientSocketHandler socketHandler) throws IOException {
-        StartupUser.socketHandler = socketHandler;
-        Socket socket = socketHandler.getSocket();
-        serverIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        serverOut = new PrintWriter(socket.getOutputStream(), true);
+    public StartupUser(String userString) {
+        userString = userString;
 
         initComponents();
 
@@ -74,7 +66,7 @@ public class StartupUser extends javax.swing.JFrame {
 
         // Update panels from file and pass each relevant panel
         PanelUpdater panelUpdater = new PanelUpdater(this, mayorPanel, councilPanel, governorPanel, senatorPanel, presidentPanel, congressPanel);
-        panelUpdater.updatePanelsFromFile("Client/src/AdminGUI/resources/Candidates.txt");
+        panelUpdater.updatePanelsFromFile(userString);
 
         // Set menu event handling
         menu2.setEvent(new MenuEvent() {
@@ -144,9 +136,9 @@ public class StartupUser extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     private void initComponents() {
         jPanel1 = new javax.swing.JPanel();
-        scrollPaneWin111 = new UserGUI.java.userGUIsupport.ScrollPaneWin11();
-        menu2 = new UserGUI.java.menu.Menu();
-        header1 = new UserGUI.java.userGUIsupport.Header();
+        scrollPaneWin111 = new ScrollPaneWin11();
+        menu2 = new Menu();
+        header1 = new Header();
         body = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);

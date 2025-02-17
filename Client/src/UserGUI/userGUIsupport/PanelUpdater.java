@@ -1,14 +1,14 @@
-package UserGUI.java.userGUIsupport;
+package userGUIsupport;
 
-import UserGUI.java.userGUIcomponent.CongressPanel;
-import UserGUI.java.userGUIcomponent.CouncilPanel;
-import UserGUI.java.userGUIcomponent.GovernorPanel;
-import UserGUI.java.userGUIcomponent.MayorPanel;
-import UserGUI.java.userGUIcomponent.PresidentPanel;
-import UserGUI.java.userGUIcomponent.SenatorPanel;
-import java.io.*;
+import userGUIcomponent.CongressPanel;
+import userGUIcomponent.CouncilPanel;
+import userGUIcomponent.GovernorPanel;
+import userGUIcomponent.MayorPanel;
+import userGUIcomponent.PresidentPanel;
+import userGUIcomponent.SenatorPanel;
+
 import java.util.*;
-import UserGUI.java.main.StartupUser;
+import main.StartupUser;
 
 /**
  * PanelUpdater is responsible for reading the candidate data from a file
@@ -49,12 +49,11 @@ public class PanelUpdater {
     /**
      * Updates the election panels with the candidates read from a file.
      *
-     * @param filePath The path of the file containing the candidates' data.
+     * @param userInfo The String containing the candidate information.
      */
-    public void updatePanelsFromFile(String filePath) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
+    public void updatePanelsFromFile(String userInfo) {
+        String[] lines = userInfo.split("\\n");
+            for (String line : lines) {
                 line = line.trim(); // Remove extra spaces
 
                 if (line.contains(":")) {  // Position line
@@ -63,7 +62,7 @@ public class PanelUpdater {
 
                     // Extract the candidates from the rest of the line
                     String candidateLine = line.split(":")[1].trim();
-                    String[] candidateArray = candidateLine.split("\\s+"); // Split by spaces
+                    String[] candidateArray = candidateLine.split("\\t"); // Split by spaces
 
                     // Add candidates to the list
                     candidates.addAll(Arrays.asList(candidateArray));
@@ -75,38 +74,42 @@ public class PanelUpdater {
                         String Candidate3 = candidates.get(2);
 
                         // Update the respective panel based on the position
-                        if ("Mayor".equals(position)) {
-                            mayorPanel.setCandidate1(Candidate1);
-                            mayorPanel.setCandidate2(Candidate2);
-                            mayorPanel.setCandidate3(Candidate3);
-                        } else if ("Council".equals(position)) {
-                            councilPanel.setCandidate1(Candidate1);
-                            councilPanel.setCandidate2(Candidate2);
-                            councilPanel.setCandidate3(Candidate3);
-                        } else if ("Governor".equals(position)) {
-                            governorPanel.setCandidate1(Candidate1);
-                            governorPanel.setCandidate2(Candidate2);
-                            governorPanel.setCandidate3(Candidate3);
-                        } else if ("Senator".equals(position)) {
-                            senatorPanel.setCandidate1(Candidate1);
-                            senatorPanel.setCandidate2(Candidate2);
-                            senatorPanel.setCandidate3(Candidate3);
-                        } else if ("President".equals(position)) {
-                            presidentPanel.setCandidate1(Candidate1);
-                            presidentPanel.setCandidate2(Candidate2);
-                            presidentPanel.setCandidate3(Candidate3);
-                        } else if ("Congress".equals(position)) {
-                            congressPanel.setCandidate1(Candidate1);
-                            congressPanel.setCandidate2(Candidate2);
-                            congressPanel.setCandidate3(Candidate3);
+                        switch (position) {
+                            case "Mayor" -> {
+                                mayorPanel.setCandidate1(Candidate1);
+                                mayorPanel.setCandidate2(Candidate2);
+                                mayorPanel.setCandidate3(Candidate3);
+                            }
+                            case "Council" -> {
+                                councilPanel.setCandidate1(Candidate1);
+                                councilPanel.setCandidate2(Candidate2);
+                                councilPanel.setCandidate3(Candidate3);
+                            }
+                            case "Governor" -> {
+                                governorPanel.setCandidate1(Candidate1);
+                                governorPanel.setCandidate2(Candidate2);
+                                governorPanel.setCandidate3(Candidate3);
+                            }
+                            case "Senator" -> {
+                                senatorPanel.setCandidate1(Candidate1);
+                                senatorPanel.setCandidate2(Candidate2);
+                                senatorPanel.setCandidate3(Candidate3);
+                            }
+                            case "President" -> {
+                                presidentPanel.setCandidate1(Candidate1);
+                                presidentPanel.setCandidate2(Candidate2);
+                                presidentPanel.setCandidate3(Candidate3);
+                            }
+                            case "Congress" -> {
+                                congressPanel.setCandidate1(Candidate1);
+                                congressPanel.setCandidate2(Candidate2);
+                                congressPanel.setCandidate3(Candidate3);
+                            }
                         }
                     } else {
                         System.out.println("Error: Less than 3 candidates found for " + position);
                     }
                 }
             }
-        } catch (IOException e) {
-            System.out.println("Error reading the file: " + e.getMessage());
-        }
     } // End updatePanelsFromFile
 } // End PanelUpdater

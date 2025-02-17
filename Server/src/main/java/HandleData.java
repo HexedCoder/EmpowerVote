@@ -108,11 +108,21 @@ public class HandleData {
             if (currentUser.userLevel == 1 || null == chosenCandidate) return HandleData.LoginStatus.FAILURE;
             if (currentUser.userVoted) return HandleData.LoginStatus.ALREADY_VOTED;
 
-            HandleData.LoginStatus status = EmpowerVoteServer.voteForUser(chosenCandidate);
-            if (status == HandleData.LoginStatus.SUCCESS) {
-                // Update the userVoted status for the current user
-                currentUser.userVoted = true;
+            String[] selectedCandidates = chosenCandidate.split("\t");
+
+            HandleData.LoginStatus status = HandleData.LoginStatus.FAILURE;
+            for (String candidate : selectedCandidates) {
+                status = EmpowerVoteServer.voteForUser(candidate);
+
+                if (status != HandleData.LoginStatus.SUCCESS) {
+                    return status;
+                }
             }
+
+            if (status == HandleData.LoginStatus.SUCCESS) {
+                currentUser.loggedIn = false;
+            }
+
             return status;
         } catch (IOException e) {
             return HandleData.LoginStatus.FAILURE;
