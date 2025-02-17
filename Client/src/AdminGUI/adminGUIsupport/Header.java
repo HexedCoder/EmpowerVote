@@ -1,4 +1,4 @@
-package UserGUI.java.userGUIsupport;
+package AdminGUI.adminGUIsupport;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,46 +7,63 @@ import java.awt.LinearGradientPaint;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Custom header panel with gradient background and an image.
+ * Custom JPanel that renders a gradient background and an image header.
  */
 public class Header extends javax.swing.JPanel {
 
-    // Instance variables
+    // Variables declaration
     private javax.swing.JLabel jLabel1;
 
+    /**
+     * Creates new form Header
+     */
     public Header() {
         initComponents();
         setOpaque(false);
-    } // End Header constructor
+    } // End Header
 
     /**
-     * Paints the custom gradient background for the header.
-     *
-     * @param grphcs The graphics context used for painting.
+     * Paints the component with a gradient background and an image header.
+     * @param graphics The Graphics object to paint with.
      */
     @Override
-    protected void paintComponent(Graphics grphcs) {
-        Graphics2D g2 = (Graphics2D) grphcs.create();
+    protected void paintComponent(Graphics graphics) {
+        Graphics2D g2 = (Graphics2D) graphics.create();
+
+        // Set up gradient paint for the background
         g2.setPaint(new LinearGradientPaint(0, 0, 0, getHeight(),
                 new float[]{0.0f, 0.5f, 1.0f}, // Positions of the colors
                 new Color[]{Color.RED, Color.WHITE, new Color(30, 95, 156)} // Colors at each position
         ));
+
+        // Fill the background with the gradient
         g2.fill(new Rectangle2D.Double(0, 0, getWidth(), getHeight()));
+
+        // Dispose of the graphics object
         g2.dispose();
-        super.paintComponent(grphcs);
+
+        super.paintComponent(graphics);
     } // End paintComponent
 
     /**
-     * Initializes the components for the header.
+     * Initializes the components for the Header panel, including the label.
      */
     @SuppressWarnings("unchecked")
-    private void initComponents() { // Start initComponents
+    private void initComponents() {
+
         jLabel1 = new javax.swing.JLabel();
 
+        // Set properties for the label
         jLabel1.setBackground(new java.awt.Color(30, 95, 156));
         jLabel1.setForeground(new java.awt.Color(30, 95, 156));
-        jLabel1.setIcon(new javax.swing.ImageIcon("resources/images/banner6.png")); // NOI18N
 
+        // Log the current user directory for debugging
+        System.out.println(System.getProperty("user.dir"));
+
+        // Set the image for the label
+        jLabel1.setIcon(new javax.swing.ImageIcon("Client/src/resources/banner6.png")); // NOI18N
+
+        // Layout the components
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -58,4 +75,4 @@ public class Header extends javax.swing.JPanel {
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
     } // End initComponents
-} // End Header class
+} // End Header

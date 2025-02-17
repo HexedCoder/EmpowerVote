@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.DecimalFormat;
 
-import AdminGUI.java.main.StartupAdmin;
+import AdminGUI.main.StartupAdmin;
 import LoginGUI.java.component.PanelCover;
 import ClientSocketHandler.ClientSocketHandler;
 import LoginGUI.java.component.PanelLoginAndRegister;

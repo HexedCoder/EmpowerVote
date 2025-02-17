@@ -1,17 +1,19 @@
-package UserGUI.java.main;
+package AdminGUI.main;
 
+import AdminGUI.adminGUIcomponent.CongressPanel;
+import AdminGUI.adminGUIcomponent.CouncilPanel;
+import AdminGUI.adminGUIcomponent.DefaultPanel;
+import AdminGUI.adminGUIcomponent.GovernorPanel;
+import AdminGUI.adminGUIcomponent.MayorPanel;
+import AdminGUI.adminGUIcomponent.PresidentPanel;
+import AdminGUI.adminGUIcomponent.SenatorPanel;
+import AdminGUI.adminGUIcomponent.StatisticsPanel;
+import AdminGUI.adminGUIsupport.Header;
+import AdminGUI.adminGUIsupport.ScrollPaneWin11;
+import AdminGUI.menu.Menu;
+import AdminGUI.menu.MenuEvent;
+import AdminGUI.adminGUIsupport.PanelUpdater;
 import ClientSocketHandler.ClientSocketHandler;
-import UserGUI.java.userGUIcomponent.CongressPanel;
-import UserGUI.java.userGUIcomponent.CouncilPanel;
-import UserGUI.java.userGUIcomponent.DefaultPanel;
-import UserGUI.java.userGUIcomponent.GovernorPanel;
-import UserGUI.java.userGUIcomponent.MayorPanel;
-import UserGUI.java.userGUIcomponent.PresidentPanel;
-import UserGUI.java.userGUIcomponent.ReviewAndSubmit;
-import UserGUI.java.userGUIcomponent.SenatorPanel;
-import UserGUI.java.menu.MenuEvent;
-import UserGUI.java.userGUIsupport.PanelUpdater;
-
 import java.awt.Component;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,41 +22,40 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- * StartupUser is the main class responsible for the user interface,
- * managing the different panels, and handling user interactions in the application.
+ * Main class for the admin startup interface.
  */
-public class StartupUser extends javax.swing.JFrame {
+public class StartupAdmin extends javax.swing.JFrame {
 
-    // Panel components for different election categories
+    // GUI Variables
+    private javax.swing.JPanel body;
+    private Header header1;
+    private javax.swing.JPanel jPanel1;
+    private Menu menu2;
+    private ScrollPaneWin11 scrollPaneWin111;
+
+    // Panel Variables
     private MayorPanel mayorPanel;
     private CouncilPanel councilPanel;
     private GovernorPanel governorPanel;
     private SenatorPanel senatorPanel;
     private PresidentPanel presidentPanel;
     private CongressPanel congressPanel;
-    private ReviewAndSubmit reviewAndSubmit;
+    private StatisticsPanel statisticsPanel;
 
-    // UI components
-    private javax.swing.JPanel body;
-    private UserGUI.java.userGUIsupport.Header header1;
-    private javax.swing.JPanel jPanel1;
-    private UserGUI.java.menu.Menu menu2;
-    private UserGUI.java.userGUIsupport.ScrollPaneWin11 scrollPaneWin111;
-
-    // Socket communication components
+    // Socket Variables
     private static BufferedReader serverIn;
     private static PrintWriter serverOut;
     private static ClientSocketHandler socketHandler;
 
     /**
-     * Initializes the StartupUser interface, establishes the socket connection,
-     * and sets up the initial UI and panels.
+     * Constructor for StartupAdmin.
+     * Initializes the components and sets up the socket connection.
      *
-     * @param socketHandler The socket handler to manage server communication.
-     * @throws IOException If an I/O error occurs while initializing the connection.
+     * @param socketHandler The socket handler used for server communication.
+     * @throws IOException If there is an error with the socket communication.
      */
-    public StartupUser(ClientSocketHandler socketHandler) throws IOException {
-        StartupUser.socketHandler = socketHandler;
+    public StartupAdmin(ClientSocketHandler socketHandler) throws IOException {
+        StartupAdmin.socketHandler = socketHandler;
         Socket socket = socketHandler.getSocket();
         serverIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         serverOut = new PrintWriter(socket.getOutputStream(), true);
@@ -68,68 +69,50 @@ public class StartupUser extends javax.swing.JFrame {
         senatorPanel = new SenatorPanel();
         presidentPanel = new PresidentPanel();
         congressPanel = new CongressPanel();
-        reviewAndSubmit = new ReviewAndSubmit();
+        statisticsPanel = new StatisticsPanel();
 
         showForm(new DefaultPanel());
 
         // Update panels from file and pass each relevant panel
         PanelUpdater panelUpdater = new PanelUpdater(this, mayorPanel, councilPanel, governorPanel, senatorPanel, presidentPanel, congressPanel);
-        panelUpdater.updatePanelsFromFile("Client/src/AdminGUI/resources/Candidates.txt");
+        System.out.println(System.getProperty("user.dir"));
+        panelUpdater.updatePanelsFromFile("Client/src/resources/Candidates&Votes.txt");
 
-        // Set menu event handling
         menu2.setEvent(new MenuEvent() {
+
             @Override
             public void selected(int index, int subIndex) {
-                // Handle menu selections based on index and subIndex
-                switch (index) {
-                    case 0:
-                        if (subIndex == 0) {
-                            showForm(new DefaultPanel());
-                        }
-                        break;
-                    case 1:
-                        if (subIndex == 1) {
-                            mayorPanel.setReviewAndSubmit(reviewAndSubmit);
-                            showForm(mayorPanel);
-                        } else if (subIndex == 2) {
-                            councilPanel.setReviewAndSubmit(reviewAndSubmit);
-                            showForm(councilPanel);
-                        }
-                        break;
-                    case 2:
-                        if (subIndex == 1) {
-                            governorPanel.setReviewAndSubmit(reviewAndSubmit);
-                            showForm(governorPanel);
-                        } else if (subIndex == 2) {
-                            senatorPanel.setReviewAndSubmit(reviewAndSubmit);
-                            showForm(senatorPanel);
-                        }
-                        break;
-                    case 3:
-                        if (subIndex == 1) {
-                            presidentPanel.setReviewAndSubmit(reviewAndSubmit);
-                            showForm(presidentPanel);
-                        } else if (subIndex == 2) {
-                            congressPanel.setReviewAndSubmit(reviewAndSubmit);
-                            showForm(congressPanel);
-                        }
-                        break;
-                    case 4:
-                        if (subIndex == 0) {
-                            showForm(reviewAndSubmit);
-                        }
-                        break;
-                    default:
-                        break;
+                if (index == 0 && subIndex == 0) {
+                    showForm(new DefaultPanel());
+                } else if (index == 1 && subIndex == 1) {
+                    showForm(mayorPanel);
+                } else if (index == 1 && subIndex == 2) {
+                    showForm(councilPanel);
+                } else if (index == 2 && subIndex == 1) {
+                    showForm(governorPanel);
+                } else if (index == 2 && subIndex == 2) {
+                    showForm(senatorPanel);
+                } else if (index == 3 && subIndex == 1) {
+                    showForm(presidentPanel);
+                } else if (index == 3 && subIndex == 2) {
+                    showForm(congressPanel);
+                } else if (index == 4 && subIndex == 0) {
+                    statisticsPanel.setStatisticsPanel(mayorPanel);
+                    statisticsPanel.setStatisticsPanel(councilPanel);
+                    statisticsPanel.setStatisticsPanel(governorPanel);
+                    statisticsPanel.setStatisticsPanel(senatorPanel);
+                    statisticsPanel.setStatisticsPanel(presidentPanel);
+                    statisticsPanel.setStatisticsPanel(congressPanel);
+                    showForm(statisticsPanel);
                 }
             }
         });
-    } // End StartupUser
+    } // End StartupAdmin
 
     /**
-     * Updates the displayed form inside the main panel.
+     * Updates the main content panel with the specified component.
      *
-     * @param com The component to display in the main body.
+     * @param com The component to be displayed in the body panel.
      */
     private void showForm(Component com) {
         body.removeAll();
@@ -138,15 +121,14 @@ public class StartupUser extends javax.swing.JFrame {
         body.revalidate();
     } // End showForm
 
-    /**
-     * Initializes the components and layout of the StartupUser UI.
-     */
     @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+
         jPanel1 = new javax.swing.JPanel();
-        scrollPaneWin111 = new UserGUI.java.userGUIsupport.ScrollPaneWin11();
-        menu2 = new UserGUI.java.menu.Menu();
-        header1 = new UserGUI.java.userGUIsupport.Header();
+        scrollPaneWin111 = new ScrollPaneWin11();
+        menu2 = new Menu();
+        header1 = new Header();
         body = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -200,4 +182,4 @@ public class StartupUser extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     } // End initComponents
-} // End StartupUser
+} // End StartupAdmin
