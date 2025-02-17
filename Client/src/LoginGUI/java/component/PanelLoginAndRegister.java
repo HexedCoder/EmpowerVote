@@ -140,7 +140,6 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
      */
     public void addLoginEvent(ActionListener event) {
         cmdLogin.addActionListener(event);
-        System.out.println("Login event added!");
     } // addLoginEvent
 
     /**
@@ -150,7 +149,6 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
      */
     public void addRegisterEvent(ActionListener event) {
         cmdRegister.addActionListener(event);
-        System.out.println("Register event added!");
     } // addRegisterEvent
 
     /**

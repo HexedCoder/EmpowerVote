@@ -46,7 +46,6 @@ public class Header extends javax.swing.JPanel {
         jLabel1.setBackground(new java.awt.Color(30, 95, 156));
         jLabel1.setForeground(new java.awt.Color(30, 95, 156));
 
-        System.out.println(System.getProperty("user.dir"));
         jLabel1.setIcon(new javax.swing.ImageIcon("resources/banner6.png")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

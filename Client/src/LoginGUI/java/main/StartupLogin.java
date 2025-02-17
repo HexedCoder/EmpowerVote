@@ -254,8 +254,7 @@ public class StartupLogin extends javax.swing.JFrame {
             return PanelLoginAndRegister.LoginStatus.FAILURE;
         }
 
-        System.out.println("Attempting login with username: " + username);
-        System.out.println("Attempting login with password: " + password);
+        System.out.println("Attempting login with  " + username + ":" + password);
 
         // Send data to socket
         socketHandler.sendMessage("LOGIN\n" + username + DELIMITER + password);

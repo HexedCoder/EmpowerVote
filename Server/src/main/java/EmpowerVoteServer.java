@@ -95,7 +95,6 @@ public class EmpowerVoteServer {
         shutdownHook();
 
         try (ServerSocket serverSocket = new ServerSocket(userPort, 50, InetAddress.getByName(userIP))) {
-            System.out.println("Server is running and waiting for client connections on 0.0.0.0:12345...");
             System.out.println("Press CTRL+C to shutdown the server.");
 
             // Set timeout of 1 second to check for shutdown
@@ -390,7 +389,7 @@ public class EmpowerVoteServer {
         sortedCandidates.sort(Comparator.comparing((HandleData.Candidate c) -> c.position).thenComparing(c -> c.name));
 
         StringBuilder voteInfo = getStringBuilder(isAdmin, sortedCandidates);
-        System.out.println(voteInfo.toString());
+
         return voteInfo.toString();
     } // End handleViewVotes
 

@@ -52,10 +52,6 @@ public class PanelUpdater {
      */
     public void updatePanelsFromString(String voteInfo) {
         String[] lines = voteInfo.split("\\n");
-        // print lines
-        for (String line : lines) {
-            System.out.println(line);
-        }
 
         for (String line : lines) {
             line = line.trim(); // Remove extra spaces
