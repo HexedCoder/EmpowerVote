@@ -217,9 +217,9 @@ public class EmpowerVoteServer {
      */
     private static void handleClient(Socket clientSocket) {
         try (
-                // Initialize input and output streams
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+            // Initialize input and output streams
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
             String inputLine;
 
             // Read input from client
@@ -278,22 +278,13 @@ public class EmpowerVoteServer {
                 return handleLogin(in);
             case "REGISTER":
                 return handleRegistration(in);
-            case "VIEW_VOTES":
-                if (HandleData.checkAdmin()) {
-                    // Display the candidates to the client
-
-                    response = handleViewVotes(true);
-
-
-                    // Send the candidates to the client
-                    out.println(response);
-                    return HandleData.LoginStatus.SUCCESS;
-                } else {
-                    return HandleData.LoginStatus.FAILURE;
-                }
             case "VOTE":
                 // Display the candidates to the client
                 response = handleViewVotes(false);
+
+                if (response.isEmpty()) {
+                    return HandleData.LoginStatus.FAILURE;
+                }
 
                 // Send the candidates to the client
                 out.println(response);
@@ -301,17 +292,21 @@ public class EmpowerVoteServer {
 
                 // Handle the vote from the client
                 return HandleData.handleVote(in);
+            case "VIEW_VOTES":
+                response = handleViewVotes(true);
 
+                if (response.isEmpty()) {
+                    return HandleData.LoginStatus.FAILURE;
+                }
+
+                // Send the candidates to the client
+                out.println(response);
+                out.println("SUCCESS");
+                return HandleData.LoginStatus.SUCCESS;
             case "LOGOUT":
                 handleLogout();
                 return HandleData.LoginStatus.LOGOUT_REQUEST;
-            case "LOGOUT_ALL":
-                HandleData.logoutAllUsers();
-                return HandleData.LoginStatus.LOGOUT_REQUEST;
             case "EXIT":
-                return HandleData.LoginStatus.SHUT_DOWN;
-            case "SHUTDOWN":
-                gServerShutdown = true;
                 return HandleData.LoginStatus.SHUT_DOWN;
             default:
                 return HandleData.LoginStatus.UNKNOWN_COMMAND;
@@ -387,7 +382,7 @@ public class EmpowerVoteServer {
 
         // Return if no candidates are found
         if (candidates.isEmpty()) {
-            return "No candidates found.";
+            return "";
         }
 
         // Sort the candidates by position and name for GUI
@@ -413,10 +408,14 @@ public class EmpowerVoteServer {
         // Append the candidates to the StringBuilder (Hide votes from non-admins)
         for (HandleData.Candidate candidate : sortedCandidates) {
             if (currentPosition == null || !currentPosition.equals(candidate.position)) {
+                if (null != currentPosition) {
+                    voteInfo.append("\r\n");
+                }
+                voteInfo.append(String.format("%s:", candidate.position));
+
                 currentPosition = candidate.position;
-                voteInfo.append(String.format("Position: %s\n", candidate.position));
             }
-            voteInfo.append(String.format("\tCandidate: %s%s\n", candidate.name, isAdmin ? ", Votes: " + candidate.votes : ""));
+            voteInfo.append(String.format("\t%s\t%s", candidate.name, isAdmin ? candidate.votes : ""));
         }
         return voteInfo;
     } // End getStringBuilder

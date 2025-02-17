@@ -135,13 +135,23 @@ public class StartupLogin extends javax.swing.JFrame {
                     case AUTHENTICATED_ADMIN -> {
                         loginAndRegister.setLoginMessage("Admin Login successful!", true);
                         loginAndRegister.disableLoginButton();
+                        StringBuilder voteStats = new StringBuilder();
 
-                        StartupAdmin startupAdmin = null;
+                        // send VIEW_VOTES command to server
+                        socketHandler.sendMessage("VIEW_VOTES");
                         try {
-                            startupAdmin = new StartupAdmin(socketHandler);
+                            String line;
+                            while (!(line = serverIn.readLine()).equals("SUCCESS")) {
+                                if (line.equals("END_OF_DATA")) {
+                                    break;
+                                } else {
+                                    voteStats.append(line).append("\n");
+                                }
+                            }
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
+                        StartupAdmin startupAdmin = new StartupAdmin(voteStats.toString());
                         startupAdmin.setVisible(true);
                     }
                     case AUTHENTICATED_USER -> {

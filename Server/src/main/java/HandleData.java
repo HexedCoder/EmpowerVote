@@ -344,6 +344,9 @@ public class HandleData {
                 String[] parts = line.split("\\t");
                 if (parts.length == 3) {
                     candidates.add(new Candidate(parts[0], parts[1], Integer.parseInt(parts[2])));
+                } else {
+                    //  print parts
+                    System.out.println(parts);
                 }
             }
         } catch (IOException e) {

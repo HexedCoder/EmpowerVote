@@ -42,23 +42,17 @@ public class StartupAdmin extends javax.swing.JFrame {
     private CongressPanel congressPanel;
     private StatisticsPanel statisticsPanel;
 
-    // Socket Variables
-    private static BufferedReader serverIn;
-    private static PrintWriter serverOut;
-    private static ClientSocketHandler socketHandler;
+    // Vote Variables
+    private String voteData;
 
     /**
      * Constructor for StartupAdmin.
      * Initializes the components and sets up the socket connection.
      *
-     * @param socketHandler The socket handler used for server communication.
-     * @throws IOException If there is an error with the socket communication.
+     * @param voteString The vote data string.
      */
-    public StartupAdmin(ClientSocketHandler socketHandler) throws IOException {
-        StartupAdmin.socketHandler = socketHandler;
-        Socket socket = socketHandler.getSocket();
-        serverIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        serverOut = new PrintWriter(socket.getOutputStream(), true);
+    public StartupAdmin(String voteString) {
+        voteData = voteString;
 
         initComponents();
 
@@ -76,7 +70,7 @@ public class StartupAdmin extends javax.swing.JFrame {
         // Update panels from file and pass each relevant panel
         PanelUpdater panelUpdater = new PanelUpdater(this, mayorPanel, councilPanel, governorPanel, senatorPanel, presidentPanel, congressPanel);
         System.out.println(System.getProperty("user.dir"));
-        panelUpdater.updatePanelsFromFile("Client/src/resources/Candidates&Votes.txt");
+        panelUpdater.updatePanelsFromString(this.voteData);
 
         menu2.setEvent(new MenuEvent() {
 

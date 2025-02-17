@@ -1,3 +1,4 @@
+Name	Position	Votes
 Mayor: John 40 Lily 60 Jimmy 30
 Council: Litterman 35 Jason 28 Lana 20
 Governor: Bobby 50 Susie 62 Katie 45
