@@ -444,4 +444,10 @@ public class EmpowerVoteServer {
     private static void handleLogout() {
         HandleData.logoutUser();
     } // End handleLogout
+
+    public static void loginUser(HandleData.User user) {
+        synchronized (userMapMutex) {
+            user.loggedIn = true;
+        }
+    }
 } // End EmpowerVoteServer

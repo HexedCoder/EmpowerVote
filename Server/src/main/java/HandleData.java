@@ -74,7 +74,7 @@ public class HandleData {
                 if (user.loggedIn && user.userLevel == 0) return LoginStatus.ALREADY_LOGGED_IN;
                 if (user.userVoted) return LoginStatus.ALREADY_VOTED;
 
-                user.loggedIn = true;
+                EmpowerVoteServer.loginUser(user);
                 currentUser = user;
                 return user.userLevel == 1 ? LoginStatus.AUTHENTICATED_ADMIN : LoginStatus.AUTHENTICATED_USER;
             }
@@ -119,10 +119,12 @@ public class HandleData {
                 }
             }
 
-            if (status == HandleData.LoginStatus.SUCCESS) {
-                currentUser.loggedIn = false;
+            synchronized (EmpowerVoteServer.userMapMutex) {
+                if (status == HandleData.LoginStatus.SUCCESS) {
+                    currentUser.userVoted = true;
+                    currentUser.loggedIn = false;
+                }
             }
-
             return status;
         } catch (IOException e) {
             return HandleData.LoginStatus.FAILURE;
