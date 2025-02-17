@@ -139,16 +139,23 @@ public class EmpowerVoteServer {
      * This method adds a shutdown hook to handle the server shutdown gracefully.
      */
     private static void shutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Shutdown signal received. Server shutting down...");
-            // Send signal to get off blocking accept() call
-            gServerShutdown = true;
+        if (!gServerShutdown) {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                System.out.println("Shutdown signal received. Server shutting down...");
+                // Send signal to get off blocking accept() call
+                gServerShutdown = true;
 
+                System.out.println("Logging out all users...");
+                HandleData.logoutAllUsers();
+                System.out.println("Saving databases...");
+                HandleData.serverShutdown();
+            }));
+        } else {
             System.out.println("Logging out all users...");
             HandleData.logoutAllUsers();
             System.out.println("Saving databases...");
             HandleData.serverShutdown();
-        }));
+        }
     } // End shutdownHook
 
     /**
