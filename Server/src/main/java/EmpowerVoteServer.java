@@ -1,8 +1,5 @@
 import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.util.*;
 
 public class EmpowerVoteServer {
@@ -258,6 +255,8 @@ public class EmpowerVoteServer {
                 }
             }
 
+        } catch (SocketException e) {
+            System.err.println("Client disconnected");
         } catch (IOException e) {
             System.err.println("Error handling client: " + e.getMessage());
         } finally {
