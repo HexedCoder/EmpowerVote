@@ -2,10 +2,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The HandleData class provides methods to handle user authentication, voting, and data management.
@@ -358,7 +355,7 @@ public class HandleData {
                     candidates.add(new Candidate(parts[0], parts[1], Integer.parseInt(parts[2])));
                 } else {
                     //  print parts
-                    System.out.println(parts);
+                    System.out.println(Arrays.toString(parts));
                 }
             }
         } catch (IOException e) {
