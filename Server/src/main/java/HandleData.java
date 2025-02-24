@@ -13,6 +13,7 @@ public class HandleData {
     private static String startupUserFilename;
     private static String startupVoteFilename;
     private static User currentUser;
+    private static String aesEncryptionKey = "empower-vote-2025-encryption-key";
 
     /**
      * Initializes the server with user data.
@@ -305,25 +306,37 @@ public class HandleData {
             return users;
         }
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            String line;
-            boolean isFirstLine = true;
-            while ((line = reader.readLine()) != null) {
-                if (isFirstLine) {
-                    isFirstLine = false;
-                    continue;
-                }
-                String[] parts = line.split("\\t");
-                if (parts.length == 4) {
-                    try {
-                        users.add(new User(parts[0], parts[1], parseUserLevel(parts[2]), Boolean.parseBoolean(parts[3]), false));
-                    } catch (NumberFormatException e) {
-                        System.out.printf("Error parsing user data: %s%n", e.getMessage());
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead = 0;
+        byte[] data = new byte[4096];
+
+        try {
+            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            buffer.flush();
+            String input = AES256Encryption.decrypt(buffer.toString(), aesEncryptionKey);
+            String[] lines = input.split("\\n");
+            for (int i = 1; i < lines.length; i++) {
+                String line = lines[i];
+                if (!line.isEmpty()) {
+                    String[] parts = line.split("\\t");
+                    if (parts.length == 4) {
+                        try {
+                            users.add(new User(parts[0], parts[1], parseUserLevel(parts[2]), Boolean.parseBoolean(parts[3]), false));
+                        } catch (NumberFormatException e) {
+                            System.out.printf("Error parsing user data: %s%n", e.getMessage());
+                        }
                     }
                 }
             }
+            inputStream.close();
         } catch (IOException e) {
             System.out.printf("Error loading user data: %s%n", e.getMessage());
+            return users;
+        } catch (Exception e) {
+            System.out.printf("Error decrypting user data: %s%n", e.getMessage());
+            return users;
         }
         return users;
     } // End loadUserData
@@ -342,10 +355,19 @@ public class HandleData {
             return candidates;
         }
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(fileStream))) {
-            String line;
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead = 0;
+        byte[] data = new byte[4096];
+
+        try {
+            while ((nRead = fileStream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            buffer.flush();
+            String input = AES256Encryption.decrypt(buffer.toString(), aesEncryptionKey);
+            String[] lines = input.split("\\n");
             boolean isFirstLine = true;
-            while ((line = reader.readLine()) != null) {
+            for (String line : lines) {
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
@@ -358,8 +380,11 @@ public class HandleData {
                     System.out.println(Arrays.toString(parts));
                 }
             }
+            fileStream.close();
         } catch (IOException e) {
             System.out.printf("Error loading vote data: %s%n", e.getMessage());
+        } catch (Exception e) {
+            System.out.printf("Error decrypting vote data: %s%n", e.getMessage());
         }
         return candidates;
     } // End loadVoteData
@@ -372,12 +397,18 @@ public class HandleData {
      */
     private static boolean saveUserData(String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            writer.write("Name\tPassword\tRole\tVoted\n");
+            StringBuilder userPlainText = new StringBuilder("Name\tPassword\tRole\tVoted\n");
             for (User user : EmpowerVoteServer.userMap.values()) {
-                writer.write(String.format("%s\t%s\t%s\t%s\n", user.name, user.password, user.userLevel == 0 ? "user" : "admin", user.userVoted));
+                userPlainText.append(String.format("%s\t%s\t%s\t%s\n", user.name, user.password, user.userLevel == 0 ? "user" : "admin", user.userVoted));
             }
+
+            String encryptedData = AES256Encryption.encrypt(String.valueOf(userPlainText), aesEncryptionKey);
+            writer.write(encryptedData);
         } catch (IOException e) {
             System.out.printf("Error saving user data: %s%n", e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.printf("Error encrypting user data: %s%n", e.getMessage());
             return false;
         }
         return true;
@@ -396,13 +427,19 @@ public class HandleData {
             return false;
         }
 
+        StringBuilder votePlainText = new StringBuilder("Name\tPosition\tVotes\n");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            writer.write("Name\tPosition\tVotes\n");
             for (Candidate candidate : candidateMap.values()) {
-                writer.write(String.format("%s\t%s\t%d\n", candidate.name, candidate.position, candidate.votes));
+                votePlainText.append(String.format("%s\t%s\t%d\n", candidate.name, candidate.position, candidate.votes));
             }
+
+            String encryptedData = AES256Encryption.encrypt(String.valueOf(votePlainText), aesEncryptionKey);
+            writer.write(encryptedData);
         } catch (IOException e) {
             System.out.printf("Error saving vote data: %s%n", e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.printf("Error encrypting vote data: %s%n", e.getMessage());
             return false;
         }
         return true;

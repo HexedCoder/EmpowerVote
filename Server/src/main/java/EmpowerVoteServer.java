@@ -121,15 +121,12 @@ public class EmpowerVoteServer {
                     // Check for shutdown signal during Timeout
                 } catch (IOException e) {
                     if (gServerShutdown) {
-                        System.out.println("Server shutting down gracefully...");
                         break;
                     }
-
                     System.err.println("Error accepting client connection: " + e.getMessage());
                 }
             }
 
-            System.out.println("Server shutdown complete.");
         } catch (IOException e) {
             System.err.println("Server encountered an error: " + e.getMessage());
         }
@@ -145,11 +142,12 @@ public class EmpowerVoteServer {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 // Send signal to get off blocking accept() call
                 gServerShutdown = true;
+
+                System.out.println("Shutdown hook initiated.");
+                HandleData.logoutAllUsers();
+                HandleData.serverShutdown();
             }));
         }
-        System.out.println("Saving user and vote data.");
-        HandleData.logoutAllUsers();
-        HandleData.serverShutdown();
 
     } // End shutdownHook
 
@@ -282,8 +280,6 @@ public class EmpowerVoteServer {
                     HandleData.addUser(adminUsername, adminPassword, 1);
                     break;
                 case "3":
-                    System.out.println("Shutting down server...");
-                    // Set your shutdown flag or execute shutdown procedures
                     gServerShutdown = true;
                     break;
                 default:
