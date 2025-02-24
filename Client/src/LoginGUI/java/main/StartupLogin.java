@@ -129,9 +129,7 @@ public class StartupLogin extends javax.swing.JFrame {
         loginAndRegister.addLoginEvent(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Login button clicked!");
                 PanelLoginAndRegister.LoginStatus status = performLogin();
-                System.out.println("Login status: " + status);
 
                 switch (status) {
                     case AUTHENTICATED_ADMIN -> {
@@ -250,11 +248,8 @@ public class StartupLogin extends javax.swing.JFrame {
 
         // Ensure no DELIMITER is in username or password
         if (username.contains(DELIMITER) || password.contains(DELIMITER)) {
-            System.out.println("Username or password cannot contain DELIMITER.");
             return PanelLoginAndRegister.LoginStatus.FAILURE;
         }
-
-        System.out.println("Attempting login with  " + username + ":" + password);
 
         // Send data to socket
         socketHandler.sendMessage("LOGIN\n" + username + DELIMITER + password);
@@ -285,7 +280,6 @@ public class StartupLogin extends javax.swing.JFrame {
 
         // Ensure no DELIMITER is in username or password
         if (username.contains(DELIMITER) || password.contains(DELIMITER)) {
-            System.out.println("Username or password cannot contain DELIMITER.");
             return;
         }
 

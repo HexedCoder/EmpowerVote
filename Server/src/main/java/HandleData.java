@@ -44,6 +44,7 @@ public class HandleData {
     public static StartupStatus voteStartup(InputStream inputStream) {
         List<Candidate> loadedCandidates = loadVoteData(inputStream);
         if (loadedCandidates.isEmpty()) {
+            System.out.println("No candidates loaded");
             return StartupStatus.FAILURE;
         }
 
@@ -358,6 +359,7 @@ public class HandleData {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead = 0;
         byte[] data = new byte[4096];
+        int [] candidateArray = {0,0,0,0,0,0}; // Mayor, Council, Governor, Senator, President, Congress
 
         try {
             while ((nRead = fileStream.read(data, 0, data.length)) != -1) {
@@ -375,9 +377,36 @@ public class HandleData {
                 String[] parts = line.split("\\t");
                 if (parts.length == 3) {
                     candidates.add(new Candidate(parts[0], parts[1], Integer.parseInt(parts[2])));
+                    switch (parts[1]) {
+                        case "Mayor":
+                            candidateArray[0] += 1;
+                            break;
+                        case "Council":
+                            candidateArray[1] += 1;
+                            break;
+                        case "Governor":
+                            candidateArray[2] += 1;
+                            break;
+                        case "Senator":
+                            candidateArray[3] += 1;
+                            break;
+                        case "President":
+                            candidateArray[4] += 1;
+                            break;
+                        case "Congress":
+                            candidateArray[5] += 1;
+                            break;
+                    }
                 } else {
                     //  print parts
                     System.out.println(Arrays.toString(parts));
+                }
+            }
+            // Ensure 3 candidates per position
+            for (int i = 0; i < candidateArray.length; ++i) {
+                if (candidateArray[i] != 3) {
+                    candidates.clear();
+                    return candidates;
                 }
             }
             fileStream.close();
