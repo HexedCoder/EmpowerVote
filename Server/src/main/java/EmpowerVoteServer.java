@@ -97,13 +97,18 @@ public class EmpowerVoteServer {
             // Set timeout of 1 second to check for shutdown
             serverSocket.setSoTimeout(1000);
 
+            // Start a new thread to handle server actions
+            new Thread(() -> serverActions(null)).start();
+
             // Server loop until CTRL+C
             while (!gServerShutdown) {
                 try {
                     // Accept client connection
                     Socket clientSocket = serverSocket.accept();
                     if (gServerShutdown) {
-                        clientSocket.close();
+                        if (clientSocket != null) {
+                            clientSocket.close();
+                        }
                         break;
                     }
 
@@ -138,21 +143,14 @@ public class EmpowerVoteServer {
     private static void shutdownHook() {
         if (!gServerShutdown) {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.out.println("Shutdown signal received. Server shutting down...");
                 // Send signal to get off blocking accept() call
                 gServerShutdown = true;
-
-                System.out.println("Logging out all users...");
-                HandleData.logoutAllUsers();
-                System.out.println("Saving databases...");
-                HandleData.serverShutdown();
             }));
-        } else {
-            System.out.println("Logging out all users...");
-            HandleData.logoutAllUsers();
-            System.out.println("Saving databases...");
-            HandleData.serverShutdown();
         }
+        System.out.println("Saving user and vote data.");
+        HandleData.logoutAllUsers();
+        HandleData.serverShutdown();
+
     } // End shutdownHook
 
     /**
@@ -212,6 +210,87 @@ public class EmpowerVoteServer {
         // Try to access the file as an InputStream
         return new FileInputStream(file);
     } // End getDataInputStream
+
+    /**
+     * Performs server actions based on the given command.
+     */
+    public static void serverActions(String command) {
+        String userInput;
+
+        // Create a scanner to read user input
+        Scanner scanner = new Scanner(System.in);
+
+        while (!gServerShutdown) {
+            // Prompt the user for input
+            System.out.println("Enter a command\n\t1. Log Out All Users\n\t2. Create Admin\n\t3. Shutdown");
+
+            try {
+                // Wait for user input
+                userInput = scanner.nextLine();
+            } catch (NoSuchElementException e) {
+                // Sleep then check for shutdown signal
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException _) {
+                    // Ignore the exception
+                }
+                continue;
+            }
+
+            // Process specific commands as needed
+            switch (userInput) {
+                case "1":
+                    System.out.println("Logging out all users...");
+                    HandleData.logoutAllUsers();
+                    break;
+                case "2":
+                    String adminUsername = "";
+                    String adminPassword = "";
+
+                    while (true) {
+                        System.out.println("Enter new admin username:");
+                        try {
+                            adminUsername = scanner.nextLine();
+                        } catch (NoSuchElementException e) {
+                            break;
+                        }
+                        if (adminUsername.isEmpty()) {
+                            System.out.println("Username cannot be empty.");
+                            continue;
+                        }
+                        System.out.println("Enter new admin password:");
+                        try {
+                            adminPassword = scanner.nextLine();
+                        } catch (NoSuchElementException e) {
+                            break;
+                        }
+                        if (adminPassword.isEmpty()) {
+                            System.out.println("Password cannot be empty.");
+                            continue;
+                        }
+                        System.out.println(" Y to confirm below or N to stop.\nUsername: " + adminUsername + "\nPassword: " + adminPassword);
+                        userInput = scanner.nextLine();
+                        if (userInput.equalsIgnoreCase("Y") || userInput.equalsIgnoreCase("N")) {
+                            break;
+                        }
+                    }
+                    if (userInput.equalsIgnoreCase("N")) {
+                        break;
+                    }
+
+                    System.out.println("Creating admin user...");
+                    HandleData.addUser(adminUsername, adminPassword, 1);
+                    break;
+                case "3":
+                    System.out.println("Shutting down server...");
+                    // Set your shutdown flag or execute shutdown procedures
+                    gServerShutdown = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+    } // End serverActions
 
     /**
      * This method handles the client connection.
