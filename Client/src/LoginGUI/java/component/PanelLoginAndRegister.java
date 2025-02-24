@@ -255,7 +255,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         jLabel1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon("resources/banner.png")); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon("resources/banner.png"));
 
         javax.swing.GroupLayout loginLayout = new javax.swing.GroupLayout(login);
         login.setLayout(loginLayout);
@@ -278,7 +278,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         register.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon("images/banner.png")); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon("resources/banner.png")); // NOI18N
 
         javax.swing.GroupLayout registerLayout = new javax.swing.GroupLayout(register);
         register.setLayout(registerLayout);
