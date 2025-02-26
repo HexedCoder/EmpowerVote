@@ -116,13 +116,19 @@ public class ServerTest {
 
     @Test
     public void testAddUser_AlreadyExists() {
-        boolean result = HandleData.addUser("user1", "password1", 0);
+        boolean result = HandleData.addUser("user1", "pass1", 0);
         assertFalse(result);
     }
 
     @Test
+    public void testLoggedinUser() {
+        HandleData.authenticateUser("user1", "pass1");
+        assertTrue(EmpowerVoteServer.userMap.get("user1").loggedIn);
+    }
+
+    @Test
     public void testLogoutUser() {
-        HandleData.authenticateUser("user1", "password1");
+        HandleData.authenticateUser("user1", "pass1");
         HandleData.logoutUser();
         assertFalse(EmpowerVoteServer.userMap.get("user1").loggedIn);
     }
@@ -140,5 +146,32 @@ public class ServerTest {
         for (HandleData.Candidate candidate : candidates.values()) {
             assertEquals(0, candidate.votes);
         }
+    }
+
+    @Test
+    public void testRegisterUser_AlreadyExists() {
+        boolean status = HandleData.addUser("user1", "password1", 0);
+        assertFalse(status);
+    }
+
+    @Test
+    public void testLogoutAdmin() {
+        HandleData.authenticateUser("adminTest", "adminTest");
+        HandleData.logoutUser();
+        assertFalse(EmpowerVoteServer.userMap.get("adminTest").loggedIn);
+    }
+
+    @Test
+    public void testServerStartup_InvalidUserData() {
+        String invalidUserData = "Invalid Data";
+        HandleData.StartupStatus status = HandleData.serverStartup(invalidUserData);
+        assertEquals(HandleData.StartupStatus.FAILURE, status);
+    }
+
+    @Test
+    public void testServerStartup_InvalidVoteData() {
+        String invalidVoteData = "Invalid Data";
+        HandleData.StartupStatus status = HandleData.voteStartup(invalidVoteData);
+        assertEquals(HandleData.StartupStatus.FAILURE, status);
     }
 }

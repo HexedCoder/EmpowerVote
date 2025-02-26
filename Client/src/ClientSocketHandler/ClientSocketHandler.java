@@ -12,11 +12,14 @@ import java.net.Socket;
  */
 public class ClientSocketHandler {
 
+    // private variables
     private final Socket socket;
-    private final BufferedReader in;
-    private final PrintWriter out;
     private Thread listenerThread;
     private static volatile boolean running;
+
+    // public variables
+    public final BufferedReader in;
+    public final PrintWriter out;
 
     /**
      * Constructs a ClientSocketHandler and connects to the specified server.
