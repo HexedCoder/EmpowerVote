@@ -69,22 +69,45 @@ public class EmpowerVoteServer {
         }
 
         // Initialize users
-        startupStatus = HandleData.serverStartup(userDataStream);
+        String decryptedData = "";
+        try {
+            decryptedData = HandleData.decryptInputStream(userDataStream);
+        } catch (Exception e) {
+            System.out.println("Error decrypting user data");
+            serverError = true;
+            decryptedData = "";
+        }
+        System.out.println(decryptedData);
+        startupStatus = HandleData.serverStartup(decryptedData);
         if (startupStatus != HandleData.StartupStatus.SUCCESS) {
             System.out.println("Failed to load users.");
             serverError = true;
         }
 
+        // Shutdown if there was an error setting up users
+        if (serverError) {
+            System.out.println("Server user data initialization failed. Exiting...");
+            return;
+        }
+
         // Initialize votes
-        startupStatus = HandleData.voteStartup(voteDataStream);
+        try {
+            decryptedData = HandleData.decryptInputStream(voteDataStream);
+        } catch (Exception e) {
+            System.out.println("Error decrypting vote data");
+            serverError = true;
+            decryptedData = "";
+        }
+        System.out.println(decryptedData);
+        startupStatus = HandleData.voteStartup(decryptedData);
         if (startupStatus != HandleData.StartupStatus.SUCCESS) {
             System.out.println("Failed to load votes.");
             serverError = true;
         }
 
-        // Shutdown if there was an error starting
+        // Shutdown if there was an error setting up votes
         if (serverError) {
-            System.out.println("Server initialization failed. Exiting...");
+            System.out.println("Server vote data initialization failed. Exiting...");
             return;
         }
 

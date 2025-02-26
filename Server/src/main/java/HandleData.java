@@ -18,11 +18,15 @@ public class HandleData {
     /**
      * Initializes the server with user data.
      *
-     * @param inputStream The input stream containing user data.
+     * @param inputData The input data containing user data.
      * @return The status of the server startup.
      */
-    public static StartupStatus serverStartup(InputStream inputStream) {
-        List<User> loadedUsers = loadUserData(inputStream);
+    public static StartupStatus serverStartup(String inputData) {
+        if (null == inputData) {
+            return StartupStatus.FAILURE;
+        }
+
+        List<User> loadedUsers = loadUserData(inputData);
         if (loadedUsers.isEmpty()) {
             return StartupStatus.FAILURE;
         }
@@ -38,11 +42,15 @@ public class HandleData {
     /**
      * Initializes the server with vote data.
      *
-     * @param inputStream The input stream containing vote data.
+     * @param inputData The input data containing vote data.
      * @return The status of the vote startup.
      */
-    public static StartupStatus voteStartup(InputStream inputStream) {
-        List<Candidate> loadedCandidates = loadVoteData(inputStream);
+    public static StartupStatus voteStartup(String inputData) {
+        if (null == inputData) {
+            return StartupStatus.FAILURE;
+        }
+
+        List<Candidate> loadedCandidates = loadVoteData(inputData);
         if (loadedCandidates.isEmpty()) {
             System.out.println("No candidates loaded");
             return StartupStatus.FAILURE;
@@ -79,8 +87,9 @@ public class HandleData {
             }
             System.out.println("Invalid password");
             return LoginStatus.INVALID_CREDENTIALS;
+        } else {
+            System.out.println("No user found");
         }
-        System.out.println("Invalid username");
 
         return LoginStatus.INVALID_CREDENTIALS;
     } // End authenticateUser
@@ -190,7 +199,7 @@ public class HandleData {
      * @param password The password to hash.
      * @return The hashed password.
      */
-    private static String getPasswordHash(String password) {
+    static String getPasswordHash(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
@@ -292,129 +301,107 @@ public class HandleData {
         };
     } // End parseUserLevel
 
+    /**
+     * Decrypts the data from the provided InputStream.
+     *
+     * @param inputStream The input stream to decrypt.
+     * @return The decrypted String.
+     * @throws Exception if an error occurs during decryption.
+     */
+    static String decryptInputStream(InputStream inputStream) throws Exception {
+        if (null == inputStream) return null;
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] data = new byte[256];
+        int nRead;
+        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        buffer.flush();
+        inputStream.close();
+        return AES256Encryption.decrypt(buffer.toString(), aesEncryptionKey);
+    } // End decryptInputStream
+
 
     /**
      * Loads user data from a file.
      *
-     * @param inputStream The input stream containing user data.
+     * @param inputData The input stream containing user data.
      * @return The list of users.
      */
-    private static List<User> loadUserData(InputStream inputStream) {
+    private static List<User> loadUserData(String inputData) {
         List<User> users = new ArrayList<>();
 
-        if (null == inputStream) {
-            System.out.println("Error loading user data: File path is null");
-            return users;
-        }
-
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int nRead = 0;
-        byte[] data = new byte[4096];
-
-        try {
-            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-                buffer.write(data, 0, nRead);
-            }
-            buffer.flush();
-            String input = AES256Encryption.decrypt(buffer.toString(), aesEncryptionKey);
-            String[] lines = input.split("\\n");
-            for (int i = 1; i < lines.length; i++) {
-                String line = lines[i];
-                if (!line.isEmpty()) {
-                    String[] parts = line.split("\\t");
-                    if (parts.length == 4) {
-                        try {
-                            users.add(new User(parts[0], parts[1], parseUserLevel(parts[2]), Boolean.parseBoolean(parts[3]), false));
-                        } catch (NumberFormatException e) {
-                            System.out.printf("Error parsing user data: %s%n", e.getMessage());
-                        }
+        String[] lines = inputData.split("\\n");
+        for (int i = 1; i < lines.length; i++) {
+            String line = lines[i];
+            if (!line.isEmpty()) {
+                String[] parts = line.split("\\t");
+                if (parts.length == 4) {
+                    try {
+                        users.add(new User(parts[0], parts[1], parseUserLevel(parts[2]), Boolean.parseBoolean(parts[3]), false));
+                    } catch (NumberFormatException e) {
+                        System.out.printf("Error parsing user data: %s%n", e.getMessage());
                     }
                 }
             }
-            inputStream.close();
-        } catch (IOException e) {
-            System.out.printf("Error loading user data: %s%n", e.getMessage());
-            return users;
-        } catch (Exception e) {
-            System.out.printf("Error decrypting user data: %s%n", e.getMessage());
-            return users;
         }
+
         return users;
     } // End loadUserData
 
     /**
      * Loads vote data from a file.
      *
-     * @param fileStream The input stream containing vote data.
+     * @param inputData The input data containing vote data.
      * @return The list of candidates.
      */
-    public static List<Candidate> loadVoteData(InputStream fileStream) {
+    public static List<Candidate> loadVoteData(String inputData) {
         List<Candidate> candidates = new ArrayList<>();
 
-        if (null == fileStream) {
-            System.out.println("Error loading candidate data: File path is null");
-            return candidates;
+        int[] candidateArray = {0, 0, 0, 0, 0, 0}; // Mayor, Council, Governor, Senator, President, Congress
+        String[] lines = inputData.split("\\n");
+        boolean isFirstLine = true;
+        for (String line : lines) {
+            if (isFirstLine) {
+                isFirstLine = false;
+                continue;
+            }
+            String[] parts = line.split("\\t");
+            if (parts.length == 3) {
+                candidates.add(new Candidate(parts[0], parts[1], Integer.parseInt(parts[2])));
+                switch (parts[1]) {
+                    case "Mayor":
+                        candidateArray[0]++;
+                        break;
+                    case "Council":
+                        candidateArray[1]++;
+                        break;
+                    case "Governor":
+                        candidateArray[2]++;
+                        break;
+                    case "Senator":
+                        candidateArray[3]++;
+                        break;
+                    case "President":
+                        candidateArray[4]++;
+                        break;
+                    case "Congress":
+                        candidateArray[5]++;
+                        break;
+                }
+            } else {
+                System.out.println(Arrays.toString(parts));
+            }
+        }
+        // Ensure 3 candidates per position
+        for (int count : candidateArray) {
+            if (count != 3) {
+                candidates.clear();
+                System.out.println("Error loading vote data: Incorrect number of candidates");
+                return candidates;
+            }
         }
 
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int nRead = 0;
-        byte[] data = new byte[4096];
-        int [] candidateArray = {0,0,0,0,0,0}; // Mayor, Council, Governor, Senator, President, Congress
-
-        try {
-            while ((nRead = fileStream.read(data, 0, data.length)) != -1) {
-                buffer.write(data, 0, nRead);
-            }
-            buffer.flush();
-            String input = AES256Encryption.decrypt(buffer.toString(), aesEncryptionKey);
-            String[] lines = input.split("\\n");
-            boolean isFirstLine = true;
-            for (String line : lines) {
-                if (isFirstLine) {
-                    isFirstLine = false;
-                    continue;
-                }
-                String[] parts = line.split("\\t");
-                if (parts.length == 3) {
-                    candidates.add(new Candidate(parts[0], parts[1], Integer.parseInt(parts[2])));
-                    switch (parts[1]) {
-                        case "Mayor":
-                            candidateArray[0] += 1;
-                            break;
-                        case "Council":
-                            candidateArray[1] += 1;
-                            break;
-                        case "Governor":
-                            candidateArray[2] += 1;
-                            break;
-                        case "Senator":
-                            candidateArray[3] += 1;
-                            break;
-                        case "President":
-                            candidateArray[4] += 1;
-                            break;
-                        case "Congress":
-                            candidateArray[5] += 1;
-                            break;
-                    }
-                } else {
-                    //  print parts
-                    System.out.println(Arrays.toString(parts));
-                }
-            }
-            // Ensure 3 candidates per position
-            for (int i = 0; i < candidateArray.length; ++i) {
-                if (candidateArray[i] != 3) {
-                    candidates.clear();
-                    return candidates;
-                }
-            }
-            fileStream.close();
-        } catch (IOException e) {
-            System.out.printf("Error loading vote data: %s%n", e.getMessage());
-        } catch (Exception e) {
-            System.out.printf("Error decrypting vote data: %s%n", e.getMessage());
-        }
         return candidates;
     } // End loadVoteData
 
