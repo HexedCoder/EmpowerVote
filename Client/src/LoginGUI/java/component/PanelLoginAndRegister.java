@@ -1,5 +1,6 @@
 package LoginGUI.java.component;
 
+import EmpowerVoteClient.LanguageManager;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionListener;
@@ -58,13 +59,13 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         // Username text field
         txtRegister = new MyTextField();
-        txtRegister.setPrefixIcon(new ImageIcon("resources/user.png"));
+        txtRegister.setPrefixIcon(new ImageIcon("src/resources/user.png"));
         txtRegister.setHint("username");
         register.add(txtRegister, "w 60%");
 
         // Password text field
         txtRegisterPass = new MyPasswordField();
-        txtRegisterPass.setPrefixIcon(new ImageIcon("resources/pass.png"));
+        txtRegisterPass.setPrefixIcon(new ImageIcon("src/resources/pass.png"));
         txtRegisterPass.setHint("password");
         register.add(txtRegisterPass, "w 60%");
 
@@ -80,6 +81,12 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         cmdRegister.setForeground(new Color(250, 250, 250));
         cmdRegister.setText("Register");
         register.add(cmdRegister, "w 40%, h 40");
+        
+        // Listen for language changes
+        LanguageManager.getInstance().addListener(index -> updateLanguage(index, label, txtRegister, txtRegisterPass, cmdRegister, false));
+
+        // Apply initial language setting
+        updateLanguage(LanguageManager.getInstance().getLanguageIndex(), label, txtRegister, txtRegisterPass, cmdRegister, false);
     } // initRegister
 
     /**
@@ -94,13 +101,13 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         // Username text field
         txtLogin = new MyTextField();
-        txtLogin.setPrefixIcon(new ImageIcon("resources/user.png"));
+        txtLogin.setPrefixIcon(new ImageIcon("src/resources/user.png"));
         txtLogin.setHint("username");
         login.add(txtLogin, "w 60%");
 
         // Password text field
         txtLoginPass = new MyPasswordField();
-        txtLoginPass.setPrefixIcon(new ImageIcon("resources/pass.png"));
+        txtLoginPass.setPrefixIcon(new ImageIcon("src/resources/pass.png"));
         txtLoginPass.setHint("password");
         login.add(txtLoginPass, "w 60%");
 
@@ -116,6 +123,12 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         cmdLogin.setForeground(new Color(250, 250, 250));
         cmdLogin.setText("Sign In");
         login.add(cmdLogin, "w 40%, h 40");
+        
+        // Listen for language changes
+        LanguageManager.getInstance().addListener(index -> updateLanguage(index, label, txtLogin, txtLoginPass, cmdLogin, true));
+
+        // Apply initial language setting
+        updateLanguage(LanguageManager.getInstance().getLanguageIndex(), label, txtLogin, txtLoginPass, cmdLogin, true);
     } // initLogin
 
     /**
@@ -140,6 +153,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
      */
     public void addLoginEvent(ActionListener event) {
         cmdLogin.addActionListener(event);
+        System.out.println("Login event added!");
     } // addLoginEvent
 
     /**
@@ -149,6 +163,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
      */
     public void addRegisterEvent(ActionListener event) {
         cmdRegister.addActionListener(event);
+        System.out.println("Register event added!");
     } // addRegisterEvent
 
     /**
@@ -255,7 +270,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         jLabel1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon("resources/banner.png"));
+        jLabel1.setIcon(new javax.swing.ImageIcon("src/main/resources/images/banner2.png")); // NOI18N
 
         javax.swing.GroupLayout loginLayout = new javax.swing.GroupLayout(login);
         login.setLayout(loginLayout);
@@ -278,7 +293,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         register.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel2.setIcon(new javax.swing.ImageIcon("resources/banner.png")); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon("src/main/resources/images/banner2.png")); // NOI18N
 
         javax.swing.GroupLayout registerLayout = new javax.swing.GroupLayout(register);
         register.setLayout(registerLayout);
@@ -306,4 +321,28 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
     public enum LoginStatus {
         AUTHENTICATED_USER, AUTHENTICATED_ADMIN, INVALID_CREDENTIALS, ALREADY_LOGGED_IN, ALREADY_EXISTS, ALREADY_VOTED, SUCCESS, FAILURE, SHUT_DOWN, LOGOUT_REQUEST, UNKNOWN_COMMAND
     } // End of LoginStatus enum
+    
+    private void updateLanguage(int languageIndex, JLabel titleLabel, MyTextField txtUser, MyPasswordField txtPass, Button btn, boolean isLogin) {
+    String[][] messages = {
+        // English
+        {"Create Account", "Username", "Password", "Register"},
+        {"Sign In", "Username", "Password", "Sign In"},
+        
+        // Spanish
+        {"Crea una cuenta", "Usuario", "Contraseña", "Registrarse"},
+        {"Iniciar sesión", "Usuario", "Contraseña", "Iniciar sesión"},
+        
+        // Russian
+        {"Создать аккаунт", "Имя пользователя", "Пароль", "Зарегистрироваться"},
+        {"Войти", "Имя пользователя", "Пароль", "Войти"}
+    };
+
+    // Choose the correct messages based on whether it's the login or register form
+    String[] selectedMessages = isLogin ? messages[languageIndex * 2 + 1] : messages[languageIndex * 2];
+
+    titleLabel.setText(selectedMessages[0]);
+    txtUser.setHint(selectedMessages[1]);
+    txtPass.setHint(selectedMessages[2]);
+    btn.setText(selectedMessages[3]);
+    }//End of updateLangugage
 } // PanelLoginAndRegister
