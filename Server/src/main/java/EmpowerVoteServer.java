@@ -77,7 +77,7 @@ public class EmpowerVoteServer {
             serverError = true;
             decryptedData = "";
         }
-        System.out.println(decryptedData);
+
         startupStatus = HandleData.serverStartup(decryptedData);
         if (startupStatus != HandleData.StartupStatus.SUCCESS) {
             System.out.println("Failed to load users.");
@@ -98,7 +98,7 @@ public class EmpowerVoteServer {
             serverError = true;
             decryptedData = "";
         }
-        System.out.println(decryptedData);
+
         startupStatus = HandleData.voteStartup(decryptedData);
         if (startupStatus != HandleData.StartupStatus.SUCCESS) {
             System.out.println("Failed to load votes.");
