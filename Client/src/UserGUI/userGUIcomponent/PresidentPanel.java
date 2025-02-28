@@ -4,7 +4,7 @@ import EmpowerVoteClient.LanguageManager;
 /**
  * PresidentPanel class provides the election interface for the President race.
  */
-public class PresidentPanel extends javax.swing.JPanel {
+public class PresidentPanel extends javax.swing.JPanel implements LanguageManager.LanguageChangeListener {
 
     // Instance variables
     private ReviewAndSubmit reviewAndSubmit;
