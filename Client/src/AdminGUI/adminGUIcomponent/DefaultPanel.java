@@ -1,11 +1,12 @@
 package AdminGUI.adminGUIcomponent;
 
+import EmpowerVoteClient.LanguageManager;
 import javax.swing.JLabel;
 
 /**
  * A panel displaying a welcome message and instructions for the EmpowerVote Admin.
  */
-public class DefaultPanel extends javax.swing.JPanel {
+public class DefaultPanel extends javax.swing.JPanel implements LanguageManager.LanguageChangeListener {
 
     // Instance variables
     private javax.swing.JLabel jLabel1;
@@ -18,7 +19,46 @@ public class DefaultPanel extends javax.swing.JPanel {
      */
     public DefaultPanel() {
         initComponents();
+        LanguageManager.getInstance().addListener(this); // Register for language updates
+        updateText(LanguageManager.getInstance().getLanguageIndex()); // Set initial text
     } // End constructor
+
+    private void updateText(int languageIndex) {
+        // Language-specific translations
+        String[][] texts = {
+            // English
+            {
+                "Welcome EmpowerVote Admin!",
+                "Select an election to view results using the menu.",
+                "View results in charts using the statistics option.",
+                "Exit anytime with the bottom-left exit button."
+            },
+            // Spanish (Shortened)
+            {
+                "¡Bienvenido, Admin de EmpowerVote!",
+                "Seleccione una elección para ver resultados.",
+                "Vea resultados en gráficos con estadísticas.",
+                "Salga en cualquier momento con el botón abajo."
+            },
+            // Russian (Shortened)
+            {
+                "Добро пожаловать, админ EmpowerVote!",
+                "Выберите выборы для просмотра результатов.",
+                "Графики доступны в разделе статистики.",
+                "Выход через кнопку внизу слева."
+            }
+        };
+
+        jLabel1.setText(texts[languageIndex][0]); // Welcome message
+        jLabel2.setText(texts[languageIndex][1]); // Instructions for viewing results
+        jLabel3.setText(texts[languageIndex][2]); // Instructions for statistics
+        jLabel4.setText(texts[languageIndex][3]); // Instructions for exiting
+    }
+
+    @Override
+    public void onLanguageChange(int newIndex) {
+        updateText(newIndex);
+    }
 
     /**
      * Initializes the components in the panel.
