@@ -1,9 +1,10 @@
 package AdminGUI.adminGUIcomponent;
 
+import EmpowerVoteClient.LanguageManager;
 /**
  * A panel that displays the candidates and their respective vote counts for the Governor election.
  */
-public class GovernorPanel extends javax.swing.JPanel {
+public class GovernorPanel extends javax.swing.JPanel implements LanguageManager.LanguageChangeListener {
 
     // Instance variables for the candidates' names and their vote counts
     private javax.swing.JLabel Candidate1;
@@ -27,6 +28,8 @@ public class GovernorPanel extends javax.swing.JPanel {
      */
     public GovernorPanel() {
         initComponents();
+        LanguageManager.getInstance().addListener(this); // Register for language changes
+        updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
     } // End GovernorPanel
 
     /**
@@ -112,6 +115,18 @@ public class GovernorPanel extends javax.swing.JPanel {
         candidate3Vote = Integer.parseInt(candidate3Votes.getText());
         return candidate3Vote;
     } // End getCandidate3Votes
+
+    //language support
+    private void updateTitle(int languageIndex) {
+        // Language-specific titles
+        String[] titles = {"Governor", "Gobernador", "Губернатор"}; // English, Spanish, Russian
+        jLabel1.setText(titles[languageIndex]);
+    }
+
+    @Override
+    public void onLanguageChange(int newIndex) {
+        updateTitle(newIndex);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
