@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-
+import EmpowerVoteClient.LanguageManager;
 import userGUIsupport.Button;
 
 import static LoginGUI.java.main.StartupLogin.serverOut;
@@ -17,7 +17,7 @@ import static LoginGUI.java.main.StartupLogin.serverOut;
 /**
  * ReviewAndSubmit panel for reviewing and submitting election votes.
  */
-public class ReviewAndSubmit extends javax.swing.JPanel {
+public class ReviewAndSubmit extends javax.swing.JPanel implements LanguageManager.LanguageChangeListener {
 
     // Instance variables
     private String mayorFinal;
@@ -49,15 +49,22 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
 
+    //Buttons
+    private Button back;
+    private Button confirm;
+    private Button cmd;
+
     /**
      * Creates new form ReviewAndSubmit.
      */
     public ReviewAndSubmit() {
         initComponents();
-
+        
+        
+        
         congratsPanel.setVisible(false);
-
-        Button back = new Button();
+        
+        back = new Button();
         back.setBackground(new Color(150,10,45));
         back.setForeground(new Color(250,250,250));
         back.setText("Go Back");
@@ -71,8 +78,8 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
         back.setVisible(true);
         areYouSure.add(back);
 
-
-        Button confirm = new Button();
+        
+        confirm = new Button();
         confirm.setBackground(new Color(150,10,45));
         confirm.setForeground(new Color(250,250,250));
         confirm.setText("Confirm");
@@ -81,14 +88,15 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 areYouSure.setVisible(false);
+                sendResults(evt);
             }
         });
         confirm.setVisible(true);
         areYouSure.add(confirm);
-
+        
         areYouSure.setVisible(false);
-
-        Button cmd = new Button();
+        
+        cmd = new Button();
         cmd.setBackground(new Color(30,95,156));
         cmd.setForeground(new Color(250,250,250));
         cmd.setText("Submit");
@@ -98,29 +106,82 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
         cmd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                if (submitResults(evt)) {
-                    // return array of names to the main class
-                    cmd.setText("THANK YOU!");
-                    // Create array of selected candidates
-                    String votingString = mayorFinal + "\t" + councilFinal + "\t" + governorFinal +
-                            "\t" + senatorFinal + "\t" + presidentFinal + "\t" +
-                            congressFinal;
-
-                    serverOut.println(votingString);
-                    cmd.setEnabled(false);
-                } else
-                    cmd.setText("Vote then Submit");
+                submitResults(evt);
             }
         });
+        
+        LanguageManager.getInstance().addListener(this); // Register for language updates
+        updateText(LanguageManager.getInstance().getLanguageIndex()); // Set initial text
+    }
+    
+    private void updateText(int languageIndex) {
+    // Language-specific translations
+    String[][] texts = {
+        // English
+            {
+                "Review and Submit",
+                "Thank you for submitting your vote!",
+                "You may now use the exit button in the bottom left of the screen to exit the program!",
+                "Are you sure you would like to submit?",
+                "You will not be able to change your selections once you hit confirm",
+                "Congress:", "Mayor:", "Council:", "Governor:", "Senator:", "President:",
+                "No Selection Entered", "Go Back", "Confirm", "Submit"
+            },
+            // Spanish
+            {
+                "Revisar y Enviar",
+                "¡Gracias por enviar su voto!",
+                "Ahora puede usar el botón de salida en la parte inferior izquierda de la pantalla para salir del programa.",
+                "¿Está seguro de que desea enviar?",
+                "No podrá cambiar sus selecciones una vez que presione confirmar",
+                "Congreso:", "Alcalde:", "Concejo Municipal:", "Gobernador:", "Senador:", "Presidente:",
+                "Ninguna selección ingresada", "Regresar", "Confirmar", "Enviar"
+            },
+            // Russian
+            {
+                "Проверить и отправить",
+                "Спасибо за ваш голос!",
+                "Теперь вы можете использовать кнопку выхода в нижнем левом углу экрана, чтобы выйти из программы.",
+                "Вы уверены, что хотите отправить?",
+                "Вы не сможете изменить свой выбор после подтверждения",
+                "Конгресс:", "Мэр:", "Городской совет:", "Губернатор:", "Сенатор:", "Президент:",
+                "Выбор не сделан", "Назад", "Подтвердить", "Отправить"
+            }
+    };
 
-        // Set default selections
-        mayorPanelSelection.setText("No Selection Entered");
-        councilPanelSelection.setText("No Selection Entered");
-        governorPanelSelection.setText("No Selection Entered");
-        senatorPanelSelection.setText("No Selection Entered");
-        presidentPanelSelection.setText("No Selection Entered");
-        congressPanelSelection.setText("No Selection Entered");
-    } // End ReviewAndSubmit constructor
+        jLabel1.setText(texts[languageIndex][0]); // Review and Submit
+        jLabel2.setText(texts[languageIndex][1]); // Thank you for submitting
+        jLabel3.setText(texts[languageIndex][2]); // Exit instructions
+        jLabel11.setText(texts[languageIndex][3]); // Are you sure you want to submit?
+        jLabel10.setText(texts[languageIndex][4]); // Cannot change after confirming
+
+        // Election position labels
+        jLabel4.setText(texts[languageIndex][5]); // Congress
+        jLabel5.setText(texts[languageIndex][6]); // Mayor
+        jLabel6.setText(texts[languageIndex][7]); // Council
+        jLabel7.setText(texts[languageIndex][8]); // Governor
+        jLabel8.setText(texts[languageIndex][9]); // Senator
+        jLabel9.setText(texts[languageIndex][10]); // President
+
+        // Set initial selection text
+        String noSelection = texts[languageIndex][11]; // "No Selection Entered" equivalent in each language
+        mayorPanelSelection.setText(noSelection);
+        councilPanelSelection.setText(noSelection);
+        governorPanelSelection.setText(noSelection);
+        senatorPanelSelection.setText(noSelection);
+        presidentPanelSelection.setText(noSelection);
+        congressPanelSelection.setText(noSelection);
+    
+        // Set button text
+        back.setText(texts[languageIndex][12]); // Go Back
+        confirm.setText(texts[languageIndex][13]); // Confirm
+        cmd.setText(texts[languageIndex][14]); // Submit
+    }
+    
+    @Override
+    public void onLanguageChange(int newIndex) {
+        updateText(newIndex);
+    }
 
     /**
      * Updates the Mayor selection.
