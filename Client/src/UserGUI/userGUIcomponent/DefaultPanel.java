@@ -1,5 +1,6 @@
 package userGUIcomponent;
 
+import EmpowerVoteClient.LanguageManager;
 /**
  * DefaultPanel class provides a welcome message and instructions for users
  * on how to navigate the voting system.
@@ -14,7 +15,46 @@ public class DefaultPanel extends javax.swing.JPanel {
 
     public DefaultPanel() {
         initComponents();
+        LanguageManager.getInstance().addListener(this); // Register for language updates
+        updateText(LanguageManager.getInstance().getLanguageIndex()); // Set initial text
     } // End constructor
+
+    private void updateText(int languageIndex) {
+        // Language-specific translations
+        String[][] texts = {
+            // English
+            {
+                "Welcome to EmpowerVote!",
+                "Select any elections you would like to vote in using the menu on the left",
+                "When you have made all of your selections",
+                "Go to review and submit to complete your ballot!"
+            },
+            // Spanish
+            {
+                "¡Bienvenido a EmpowerVote!",
+                "Seleccione las elecciones en las que desea votar utilizando el menú de la izquierda",
+                "Cuando haya hecho todas sus selecciones",
+                "Vaya a revisar y enviar para completar su boleta"
+            },
+            // Russian
+            {
+                "Добро пожаловать в EmpowerVote!",
+                "Выберите выборы, в которых хотите участвовать, используя меню слева",
+                "Когда вы сделаете все свои выборы",
+                "Перейдите к проверке и отправке, чтобы завершить ваш бюллетень"
+            }
+        };
+
+        jLabel1.setText(texts[languageIndex][0]);
+        jLabel2.setText(texts[languageIndex][1]);
+        jLabel3.setText(texts[languageIndex][2]);
+        jLabel4.setText(texts[languageIndex][3]);
+    }
+
+    @Override
+    public void onLanguageChange(int newIndex) {
+        updateText(newIndex);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
