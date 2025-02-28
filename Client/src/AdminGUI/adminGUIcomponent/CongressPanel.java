@@ -1,11 +1,12 @@
 package AdminGUI.adminGUIcomponent;
 
+import EmpowerVoteClient.LanguageManager;
 import javax.swing.JLabel;
 
 /**
  * A panel for displaying Congress election candidates and their vote counts.
  */
-public class CongressPanel extends javax.swing.JPanel {
+public class CongressPanel extends javax.swing.JPanel implements LanguageManager.LanguageChangeListener {
 
     // Candidate variables
     public static String candidate1;
@@ -29,6 +30,8 @@ public class CongressPanel extends javax.swing.JPanel {
      */
     public CongressPanel() {
         initComponents();
+        LanguageManager.getInstance().addListener(this); // Register for language changes
+        updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
     } // End constructor
 
     /**
@@ -114,6 +117,18 @@ public class CongressPanel extends javax.swing.JPanel {
         candidate3Vote = Integer.parseInt(candidate3Votes.getText());
         return candidate3Vote;
     } // End getCandidate3Votes
+
+    //language support
+    private void updateTitle(int languageIndex) {
+        // Language-specific titles
+        String[] titles = {"Congress", "Congreso", "Конгресс"}; // English, Spanish, Russian
+        jLabel1.setText(titles[languageIndex]);
+    }
+
+    @Override
+    public void onLanguageChange(int newIndex) {
+        updateTitle(newIndex);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
