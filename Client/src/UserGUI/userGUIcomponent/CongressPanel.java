@@ -1,11 +1,14 @@
 package userGUIcomponent;
 
+import EmpowerVoteClient.LanguageManager;
+
 /**
  * CongressPanel class represents the UI panel for voting in the Congress election.
  * It provides options to select a candidate and submit the selection.
+ * @author Marc
  */
-public class CongressPanel extends javax.swing.JPanel {
-
+public class CongressPanel extends javax.swing.JPanel implements LanguageManager.LanguageChangeListener {
+    
     // Variables declaration
     private ReviewAndSubmit reviewAndSubmit;
     private javax.swing.JRadioButton Candidate1;
@@ -19,6 +22,8 @@ public class CongressPanel extends javax.swing.JPanel {
      */
     public CongressPanel() {
         initComponents();
+        LanguageManager.getInstance().addListener(this); // Register for language changes
+        updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
     } // End CongressPanel
 
     /**
@@ -56,6 +61,27 @@ public class CongressPanel extends javax.swing.JPanel {
     public void setCandidate3(String candidate) {
         Candidate3.setText(candidate);
     } // End setCandidate3
+
+    /**
+     * Updates the title based on the selected language.
+     *
+     * @param languageIndex The index of the selected language.
+     */
+    private void updateTitle(int languageIndex) {
+        // Language-specific titles
+        String[] titles = {"Congress", "Congreso", "Конгресс"}; // English, Spanish, Russian
+        jLabel1.setText(titles[languageIndex]);
+    } // End updateTitle
+
+    /**
+     * Handles language change event and updates the UI accordingly.
+     *
+     * @param newIndex The new language index.
+     */
+    @Override
+    public void onLanguageChange(int newIndex) {
+        updateTitle(newIndex);
+    } // End onLanguageChange
 
     /**
      * This method initializes the components for the CongressPanel.
@@ -144,21 +170,21 @@ public class CongressPanel extends javax.swing.JPanel {
     /**
      * Handles the action when Candidate1 is selected.
      */
-    private void Candidate1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Candidate1ActionPerformed
+    private void Candidate1ActionPerformed(java.awt.event.ActionEvent evt) {
         reviewAndSubmit.updateCongress(Candidate1.getText());
     } // End Candidate1ActionPerformed
 
     /**
      * Handles the action when Candidate2 is selected.
      */
-    private void Candidate2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Candidate2ActionPerformed
+    private void Candidate2ActionPerformed(java.awt.event.ActionEvent evt) {
         reviewAndSubmit.updateCongress(Candidate2.getText());
     } // End Candidate2ActionPerformed
 
     /**
      * Handles the action when Candidate3 is selected.
      */
-    private void Candidate3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Candidate3ActionPerformed
+    private void Candidate3ActionPerformed(java.awt.event.ActionEvent evt) {
         reviewAndSubmit.updateCongress(Candidate3.getText());
     } // End Candidate3ActionPerformed
 } // End CongressPanel
