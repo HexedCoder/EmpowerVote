@@ -5,7 +5,7 @@ import EmpowerVoteClient.LanguageManager;
  * DefaultPanel class provides a welcome message and instructions for users
  * on how to navigate the voting system.
  */
-public class DefaultPanel extends javax.swing.JPanel {
+public class DefaultPanel extends javax.swing.JPanel implements LanguageManager.LanguageChangeListener {
 
     // Variables declaration
     private javax.swing.JLabel jLabel1;
