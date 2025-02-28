@@ -55,7 +55,9 @@ public class Menu extends JComponent implements LanguageManager.LanguageChangeLi
         layout = new MigLayout("Wrap 1, fillx, gapy 5, inset 2", "fill");
         setLayout(layout);
         setOpaque(true);
-        
+
+        removeAll(); // Clear existing components
+
         // Initialize menu items
         for(int i = 0; i < menuItems.length; i++){
             addMenu(menuItems[i][0], i);
@@ -74,7 +76,7 @@ public class Menu extends JComponent implements LanguageManager.LanguageChangeLi
     private void addMenu(String menuName, int index){
         int length = menuItems[index].length;
         MenuItem item = new MenuItem(menuName, index, length > 1);
-        
+
         item.addActionListener(e -> {
             if(length > 1){
                 if(!item.isSelected()){
@@ -199,7 +201,6 @@ public class Menu extends JComponent implements LanguageManager.LanguageChangeLi
         }
 
         // Refresh UI
-        removeAll();
         init();
         revalidate();
         repaint();

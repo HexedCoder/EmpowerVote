@@ -24,7 +24,7 @@ public class Menu extends JComponent implements LanguageManager.LanguageChangeLi
     // Instance variables
     private MenuEvent event;
     private MigLayout layout;
-    private String[][] menuItem;
+    private String[][] menuItems;
 
     /**
      * Constructor to initialize the Menu.

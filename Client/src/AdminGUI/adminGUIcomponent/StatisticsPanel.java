@@ -1,6 +1,6 @@
 package AdminGUI.adminGUIcomponent;
 
-import AdminGUI.java.adminGUIchart.ModelPolarArea;
+import AdminGUI.adminGUIchart.ModelPolarArea;
 import EmpowerVoteClient.LanguageManager;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -20,6 +20,17 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
     private SenatorPanel senatorPanel;
     private PresidentPanel presidentPanel;
     private CongressPanel congressPanel;
+
+    // Chart variables
+    private AdminGUI.adminGUIchart.PolarAreaChart1 polarAreaChart1;
+
+    // UI components
+    private javax.swing.JButton mayorButton;
+    private javax.swing.JButton councilButton;
+    private javax.swing.JButton governorButton;
+    private javax.swing.JButton senatorButton;
+    private javax.swing.JButton presidentButton;
+    private javax.swing.JButton congressButton;
 
     // Stores the current chart title for language updates
     private String currentChartTitle = ""; 
@@ -164,7 +175,7 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
     private void initComponents() {
 
         mayorButton = new javax.swing.JButton();
-        polarAreaChart1 = new AdminGUI.java.adminGUIchart.PolarAreaChart1();
+        polarAreaChart1 = new AdminGUI.adminGUIchart.PolarAreaChart1();
         councilButton = new javax.swing.JButton();
         governorButton = new javax.swing.JButton();
         presidentButton = new javax.swing.JButton();
