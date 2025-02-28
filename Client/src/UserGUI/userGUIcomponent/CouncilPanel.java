@@ -1,10 +1,11 @@
 package userGUIcomponent;
 
+import EmpowerVoteClient.LanguageManager;
 /**
  * CouncilPanel class represents the UI panel for voting in the City Council election.
  * It provides options to select a candidate and submit the selection.
  */
-public class CouncilPanel extends javax.swing.JPanel {
+public class CouncilPanel extends javax.swing.JPanel implements LanguageManager.LanguageChangeListener {
 
     // Variables declaration
     private ReviewAndSubmit reviewAndSubmit;
@@ -19,6 +20,8 @@ public class CouncilPanel extends javax.swing.JPanel {
      */
     public CouncilPanel() {
         initComponents();
+        LanguageManager.getInstance().addListener(this); // Register for language changes
+        updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
     } // End constructor
 
     /**
@@ -56,6 +59,17 @@ public class CouncilPanel extends javax.swing.JPanel {
     public void setCandidate3(String candidate) {
         Candidate3.setText(candidate);
     } // End setCandidate3
+
+    private void updateTitle(int languageIndex) {
+        // Language-specific titles
+        String[] titles = {"City Council", "Concejo Municipal", "Городской совет"};
+        jLabel1.setText(titles[languageIndex]);
+    }
+
+    @Override
+    public void onLanguageChange(int newIndex) {
+        updateTitle(newIndex);
+    }
 
     /**
      * This method initializes the components for the CouncilPanel.

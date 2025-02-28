@@ -13,28 +13,37 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
+import EmpowerVoteClient.LanguageManager;
 
 /**
  * Menu class for the admin interface.
  * Handles the rendering and interaction of the menu components.
  */
-public class Menu extends JComponent {
-
+public class Menu extends JComponent implements LanguageManager.LanguageChangeListener{
+    private JButton cmdExit; // Declare exit button
     // Instance variables
     private MenuEvent event;
     private MigLayout layout;
-    private String[][] menuItems = new String[][]{
-            {"Main Page"},
-            {"Local Government Election", "City Mayor", "City Council"},
-            {"State Government Election", "Governor", "Senator"},
-            {"Federal Government Election", "President", "Congress"},
-            {"Statistics"}
-    }; // End menuItems
+    private String[][] menuItem;
 
     /**
      * Constructor to initialize the Menu.
      */
-    public Menu() {
+    public Menu(){
+        LanguageManager.getInstance().addListener(this); // Register for language changes
+        
+        // Initialize the exit button BEFORE updating menu items
+        cmdExit = new JButton();
+        cmdExit.setForeground(new Color(250,250,250));
+        cmdExit.setFont(new Font("sansserif", 1, 20));
+        cmdExit.setContentAreaFilled(false);
+        cmdExit.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        cmdExit.addActionListener(e -> System.exit(0));
+
+        // Now update menu items
+        updateMenuItems(LanguageManager.getInstance().getLanguageIndex());
+
+        // Initialize UI
         init();
     } // End Menu
 
@@ -51,15 +60,9 @@ public class Menu extends JComponent {
             addMenu(menuItems[i][0], i);
         }
 
-        //-------------------------------------------------
-        // Exit button
-        JButton cmdExit = new JButton("Exit");
-        cmdExit.setForeground(new Color(250, 250, 250));
-        cmdExit.setFont(new Font("sansserif", 1, 20));
-        cmdExit.setContentAreaFilled(false);
-        cmdExit.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        cmdExit.addActionListener(e -> System.exit(0));
+        // Add exit button to the layout
         add(cmdExit, "push, aligny bottom");
+        
     } // End init
 
     /**
@@ -152,6 +155,55 @@ public class Menu extends JComponent {
         g2.fill(new Rectangle2D.Double(0, 0, getWidth(), getHeight()));
         super.paintComponent(graphics);
     } // End paintComponent
+
+    //language support
+    private void updateMenuItems(int languageIndex) {
+        // Language-specific menu items
+        String[][][] localizedMenuItems = {
+            // English
+            {
+                {"Main Page"},
+                {"Local Government", "City Mayor", "City Council"},
+                {"State Government", "Governor", "Senator"},
+                {"Federal Government", "President", "Congress"},
+                {"Statistics"}
+            },
+            // Spanish (More Concise)
+            {
+                {"Página Principal"},
+                {"Gob. Local", "Alcalde", "Concejo"},
+                {"Gob. Estatal", "Gobernador", "Senador"},
+                {"Gob. Federal", "Presidente", "Congreso"},
+                {"Estadísticas"}
+            },
+            // Russian (More Concise)
+            {
+                {"Главная"},
+                {"Местное", "Мэр", "Совет"},
+                {"Штат", "Губернатор", "Сенатор"},
+                {"Федеральное", "Президент", "Конгресс"},
+                {"Статистика"}
+            }
+        };
+
+        // Exit button translations
+        String[] exitLabels = {"Exit", "Salir", "Выход"};
+
+        menuItems = localizedMenuItems[languageIndex]; // Set menu items based on selected language
+        
+        // Ensure cmdExit exists before updating its text
+        if (cmdExit != null) {
+            cmdExit.setText(exitLabels[languageIndex]); // Update exit button text
+        }
+
+        revalidate();
+        repaint(); // Refresh UI
+    }
+
+    @Override
+    public void onLanguageChange(int newIndex) { // Correctly implementing interface method
+        updateMenuItems(newIndex);
+    }
 
     public MenuEvent getEvent() {
         return event;

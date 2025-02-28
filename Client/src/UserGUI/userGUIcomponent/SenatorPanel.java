@@ -4,11 +4,12 @@ import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import EmpowerVoteClient.LanguageManager;
 
 /**
  * SenatorPanel handles the selection of candidates for the Senator election.
  */
-public class SenatorPanel extends JPanel {
+public class SenatorPanel extends JPanel implements LanguageManager.LanguageChangeListener {
 
     // Instance variables
     private ReviewAndSubmit reviewAndSubmit;
@@ -23,6 +24,8 @@ public class SenatorPanel extends JPanel {
      */
     public SenatorPanel() {
         initComponents();
+        LanguageManager.getInstance().addListener(this); // Register for language changes
+        updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
     } // End SenatorPanel constructor
 
     /**
@@ -52,6 +55,17 @@ public class SenatorPanel extends JPanel {
     public void setCandidate3(String candidate) {
         Candidate3.setText(candidate);
     } // End setCandidate3
+
+    private void updateTitle(int languageIndex) {
+        // Language-specific titles
+        String[] titles = {"Senator", "Senador", "Сенатор"};
+        jLabel1.setText(titles[languageIndex]);
+    }
+
+    @Override
+    public void onLanguageChange(int newIndex) {
+        updateTitle(newIndex);
+    }
 
     /**
      * Initializes the components of the SenatorPanel.

@@ -1,9 +1,10 @@
 package userGUIcomponent;
 
+import EmpowerVoteClient.LanguageManager;
 /**
  * PresidentPanel class provides the election interface for the President race.
  */
-public class PresidentPanel extends javax.swing.JPanel {
+public class PresidentPanel extends javax.swing.JPanel implements LanguageManager.LanguageChangeListener {
 
     // Instance variables
     private ReviewAndSubmit reviewAndSubmit;
@@ -18,6 +19,8 @@ public class PresidentPanel extends javax.swing.JPanel {
      */
     public PresidentPanel() {
         initComponents();
+        LanguageManager.getInstance().addListener(this); // Register for language changes
+        updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
     } // End PresidentPanel constructor
 
     /**
@@ -47,6 +50,17 @@ public class PresidentPanel extends javax.swing.JPanel {
     public void setCandidate3(String candidate) {
         Candidate3.setText(candidate);
     } // End setCandidate3
+
+    private void updateTitle(int languageIndex) {
+        // Language-specific titles
+        String[] titles = {"President", "Presidente", "Президент"};
+        jLabel1.setText(titles[languageIndex]);
+    }
+
+    @Override
+    public void onLanguageChange(int newIndex) {
+        updateTitle(newIndex);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

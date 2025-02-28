@@ -1,5 +1,6 @@
 package LoginGUI.java.component;
 
+import EmpowerVoteClient.LanguageManager;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -35,6 +36,7 @@ public class PanelCover extends javax.swing.JPanel {
     private JLabel description2;
     private ButtonOutLine button;
     private boolean isLogin;
+    private JButton cmdExit;
 
     /**
      * Constructs the PanelCover and initializes its components.
@@ -99,6 +101,14 @@ public class PanelCover extends javax.swing.JPanel {
                 return label;
             }
         });
+        // Attach listener to update language
+        comboBox.addActionListener(e -> {
+            int selectedIndex = comboBox.getSelectedIndex();
+            LanguageManager.getInstance().setLanguageIndex(selectedIndex);
+            
+            login(isLogin);
+            
+        });
 
         add(comboBox, "w 30%, h 8");
         //=================================================
@@ -106,7 +116,7 @@ public class PanelCover extends javax.swing.JPanel {
         //-------------------------------------------------
         // Exit button
         //==================================================
-        JButton cmdExit = new JButton("Exit");
+        cmdExit = new JButton("Exit");
         cmdExit.setForeground(new Color(100,100,100));
         cmdExit.setFont(new Font("sansserif", 1, 12));
         cmdExit.setContentAreaFilled(false);
@@ -211,20 +221,40 @@ public class PanelCover extends javax.swing.JPanel {
      *
      * @param login true for login mode, false for registration mode
      */
-    private void login(boolean login){
-        if (this.isLogin != login){
-            if (login){
-                title.setText("Need to Register?");
-                description1.setText("Create an Account");
-                description2.setText("in just a few easy steps!");
-                button.setText("Register");
-            } else {
-                title.setText("Welcome!");
-                description1.setText("Sign in and make your voice heard!");
-                description2.setText("Vote today!");
-                button.setText("Sign In");
-            }
-            this.isLogin = login;
-        }
+    //-------------------------------------------
+    //Language support
+    //-------------------------------------------
+    private void login(boolean login) {
+    
+        int languageIndex = LanguageManager.getInstance().getLanguageIndex(); // Get current language
+        
+        // Language-specific messages for login/register toggle
+        String[][] messages = {
+            // English
+            
+            {"Welcome!", "Sign in and make your voice heard!", "Vote today!", "Sign In", "Exit"},
+            {"Need to Register?", "Create an Account", "in just a few easy steps!", "Register", "Exit"},
+            
+            // Spanish
+            {"¡Bienvenido!", "¡Inicia sesión y haz que se escuche tu voz!", "¡Vota hoy!", "Iniciar sesión", "Salir"},
+            {"¿Necesitas registrarte?", "Crea una cuenta", "en solo unos pocos pasos fáciles!", "Registrarse", "Salir"},
+            
+            // Russian
+            {"Добро пожаловать!", "Войдите и дайте услышать свой голос!", "Голосуйте сегодня!", "Войти", "Выход"},
+            {"Зарегистрироваться?", "Создайте аккаунт", "всего за несколько простых шагов!", "Зарегистрироваться", "Выход"}
+        };
+
+        // Select the correct row based on login/register state
+        String[] selectedMessages = messages[languageIndex * 2 + (login ? 1 : 0)];
+
+        // Update UI components
+        title.setText(selectedMessages[0]);
+        description1.setText(selectedMessages[1]);
+        description2.setText(selectedMessages[2]);
+        button.setText(selectedMessages[3]);
+        cmdExit.setText(selectedMessages[4]);
+
+        this.isLogin = login;
+        
     } // login
 } // PanelCover
