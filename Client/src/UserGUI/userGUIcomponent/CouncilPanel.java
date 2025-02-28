@@ -5,7 +5,7 @@ import EmpowerVoteClient.LanguageManager;
  * CouncilPanel class represents the UI panel for voting in the City Council election.
  * It provides options to select a candidate and submit the selection.
  */
-public class CouncilPanel extends javax.swing.JPanel {
+public class CouncilPanel extends javax.swing.JPanel implements LanguageManager.LanguageChangeListener {
 
     // Variables declaration
     private ReviewAndSubmit reviewAndSubmit;
