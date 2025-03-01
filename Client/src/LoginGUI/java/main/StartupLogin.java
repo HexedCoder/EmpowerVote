@@ -9,6 +9,9 @@ import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.net.Socket;
 import java.text.DecimalFormat;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import AdminGUI.main.StartupAdmin;
 import main.StartupUser;
@@ -44,6 +47,7 @@ public class StartupLogin extends javax.swing.JFrame {
     private static BufferedReader serverIn;
     public static PrintWriter serverOut;
     private static ClientSocketHandler socketHandler;
+    private Point pressedPoint; // Stores initial click position
 
     private javax.swing.JLayeredPane background;
 
@@ -55,6 +59,26 @@ public class StartupLogin extends javax.swing.JFrame {
 
         initComponents();
         init();
+
+        // Make frame draggable by pressing and dragging the header
+        header1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                pressedPoint = e.getPoint(); // Store click position
+            }
+        });
+
+        header1.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (pressedPoint != null) {
+                    // Calculate new window position
+                    int x = getLocation().x + e.getX() - pressedPoint.x;
+                    int y = getLocation().y + e.getY() - pressedPoint.y;
+                    setLocation(x, y); // Move frame
+                }
+            }
+        });
     }
 
     private void init(){
