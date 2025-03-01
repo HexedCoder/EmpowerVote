@@ -293,6 +293,8 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
             return false;
         }
         areYouSure.setVisible(true);
+        areYouSure.revalidate();
+        areYouSure.repaint();
         return true;
     } // End submitResults
 
