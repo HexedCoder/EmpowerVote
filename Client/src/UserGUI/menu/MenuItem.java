@@ -86,6 +86,10 @@ public class MenuItem extends JButton {
         this.subMenuAble = subMenuAble;
         setContentAreaFilled(false);
         setForeground(new Color(230, 230, 230));
+        
+        // Increase text size for better readability
+        setFont(new Font("sansserif", Font.BOLD, 13)); // Larger font size
+        
         setHorizontalAlignment(SwingConstants.LEFT);
         setBorder(new EmptyBorder(9, 10, 9, 10));
 
@@ -117,8 +121,12 @@ public class MenuItem extends JButton {
     public void initSubMenu(int subMenuIndex, int length) {
         this.subMenuIndex = subMenuIndex;
         this.length = length;
-        setBorder(new EmptyBorder(9, 33, 9, 10));
+        setBorder(new EmptyBorder(12, 35, 12, 15)); // Increased padding
         setBackground(new Color(89, 135, 179));
+
+        // Change sub-menu text to black for better contrast
+        setForeground(Color.BLACK);
+        
         setOpaque(true);
     } // End initSubMenu
 
