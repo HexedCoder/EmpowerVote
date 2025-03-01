@@ -1,6 +1,7 @@
 package userGUIcomponent;
 
 import EmpowerVoteClient.LanguageManager;
+import java.awt.Color;
 /**
  * CouncilPanel class represents the UI panel for voting in the City Council election.
  * It provides options to select a candidate and submit the selection.
@@ -22,6 +23,7 @@ public class CouncilPanel extends javax.swing.JPanel implements LanguageManager.
         initComponents();
         LanguageManager.getInstance().addListener(this); // Register for language changes
         updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
+        setBackground(Color.WHITE); // Set background color
     } // End constructor
 
     /**
