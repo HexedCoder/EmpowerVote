@@ -40,6 +40,11 @@ public class ButtonOutLine extends JButton {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // Enable antialiasing
         g2.setColor(getBackground()); // Use background color for the outline
         g2.drawRoundRect(0, 0, width - 1, height - 1, height, height); // Draw rounded outline
+
+        // Dynamically adjust font size based on button height
+        int fontSize = Math.max(12, height / 3); // Minimum font size 12, scales with height
+        setFont(new Font("sansserif", Font.BOLD, fontSize));
+        
         super.paintComponent(graphics); // Call the superclasses paint method for default rendering
     } // paintComponent
 } // ButtonOutLine
