@@ -187,29 +187,14 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
         confirm.setForeground(new Color(250,250,250));
         confirm.setText(confirmTexts[language]);
         confirm.setBounds(368, 330, 75, 23);
+        Button cmd = new Button();
+
         confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 validSelection = true;
                 areYouSure.setVisible(false);
-            }
-        });
-        confirm.setVisible(true);
-        areYouSure.add(confirm);
-
-        areYouSure.setVisible(false);
-
-        Button cmd = new Button();
-        cmd.setBackground(new Color(30,95,156));
-        cmd.setForeground(new Color(250,250,250));
-        cmd.setText(submitTexts[language]);
-        cmd.setBounds(294, 486, 140, 40);
-        add(cmd);
-        cmd.setVisible(true);
-        cmd.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                if (submitResults(evt)) {
+                if (validSelection) {
                     // return array of names to the main class
                     cmd.setText(thankYouTexts[language]);
                     // Create array of selected candidates
@@ -219,8 +204,26 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
 
                     serverOut.println(votingString);
                     cmd.setEnabled(false);
-                } else
+                } else {
                     cmd.setText(voteThenSubmitText[language]);
+                }
+            }
+        });
+        confirm.setVisible(true);
+        areYouSure.add(confirm);
+
+        areYouSure.setVisible(false);
+
+        cmd.setBackground(new Color(30,95,156));
+        cmd.setForeground(new Color(250,250,250));
+        cmd.setText(submitTexts[language]);
+        cmd.setBounds(294, 486, 140, 40);
+        add(cmd);
+        cmd.setVisible(true);
+        cmd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitResults(evt);
             }
         });
         // Set default selections
@@ -288,7 +291,7 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
             return false;
         }
         areYouSure.setVisible(true);
-        return validSelection;
+        return true;
     } // End submitResults
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
