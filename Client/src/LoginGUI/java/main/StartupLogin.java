@@ -62,22 +62,22 @@ public class StartupLogin extends javax.swing.JFrame {
         initComponents();
         init();
 
-        // Make frame draggable by pressing and dragging the header
-        header1.addMouseListener(new MouseAdapter() {
+        // Make the entire window draggable
+        background.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                pressedPoint = e.getPoint(); // Store click position
+                pressedPoint = e.getPoint(); // Store initial click position
             }
         });
 
-        header1.addMouseMotionListener(new MouseAdapter() {
+        background.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (pressedPoint != null) {
                     // Calculate new window position
                     int x = getLocation().x + e.getX() - pressedPoint.x;
                     int y = getLocation().y + e.getY() - pressedPoint.y;
-                    setLocation(x, y); // Move frame
+                    setLocation(x, y); // Move the frame
                 }
             }
         });
