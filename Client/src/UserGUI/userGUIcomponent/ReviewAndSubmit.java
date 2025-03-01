@@ -55,6 +55,8 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
     public ReviewAndSubmit() {
         initComponents();
 
+        setBackground(Color.WHITE); // Set background color
+
         congratsPanel.setVisible(false);
 
         Button back = new Button();
