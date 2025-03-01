@@ -1,6 +1,7 @@
 package userGUIcomponent;
 
 import EmpowerVoteClient.LanguageManager;
+import java.awt.Color;
 /**
  * PresidentPanel class provides the election interface for the President race.
  */
@@ -21,6 +22,7 @@ public class PresidentPanel extends javax.swing.JPanel implements LanguageManage
         initComponents();
         LanguageManager.getInstance().addListener(this); // Register for language changes
         updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
+        setBackground(Color.WHITE); // Set background color
     } // End PresidentPanel constructor
 
     /**
