@@ -15,6 +15,8 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import EmpowerVoteClient.LanguageManager;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
@@ -232,7 +234,8 @@ public class PolarAreaChart1 extends javax.swing.JComponent {
 
         title.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
         title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        title.setText("Elections");
+        String [] titleText = {"Elections", "Elecciones", "Выборы"};
+        title.setText(titleText[LanguageManager.getInstance().getLanguageIndex()]);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
