@@ -5,6 +5,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import EmpowerVoteClient.LanguageManager;
+import java.awt.Color;
 
 /**
  * SenatorPanel handles the selection of candidates for the Senator election.
@@ -26,6 +27,7 @@ public class SenatorPanel extends JPanel implements LanguageManager.LanguageChan
         initComponents();
         LanguageManager.getInstance().addListener(this); // Register for language changes
         updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
+        setBackground(Color.WHITE); // Set background color
     } // End SenatorPanel constructor
 
     /**
