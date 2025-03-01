@@ -121,8 +121,7 @@ public class MenuItem extends JButton {
         setBorder(new EmptyBorder(12, 35, 12, 15)); // Increased padding
         setBackground(new Color(53,90,125));
 
-        // Change sub-menu text to black for better contrast
-        setForeground(Color.BLACK);
+        
         
         setOpaque(true);
     } // End initSubMenu
