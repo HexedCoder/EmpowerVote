@@ -6,6 +6,7 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Font;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -107,6 +108,11 @@ public class Button extends JButton {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(getBackground());
         g2.fillRoundRect(0, 0, width, height, height, height); // Draw rounded rectangle
+
+        // Dynamically adjust font size based on button height
+        int fontSize = Math.max(12, height / 3); // Ensure a minimum font size of 12
+        setFont(new Font("sansserif", Font.BOLD, fontSize));
+        
         if (pressedPoint != null) {
             g2.setColor(effectColor);
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));
