@@ -13,6 +13,9 @@ import menu.MenuEvent;
 import userGUIsupport.PanelUpdater;
 import userGUIsupport.Header;
 import userGUIsupport.ScrollPaneWin11;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import java.awt.Component;
 import java.io.IOException;
@@ -42,6 +45,8 @@ public class StartupUser extends javax.swing.JFrame {
     // Socket communication components
     private String userString;
 
+    private Point pressedPoint; // Stores initial click position
+
     /**
      * Initializes the StartupUser interface, establishes the socket connection,
      * and sets up the initial UI and panels.
@@ -52,6 +57,26 @@ public class StartupUser extends javax.swing.JFrame {
         userString = userString;
 
         initComponents();
+
+        // Make frame draggable by pressing and dragging the header
+        header1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                pressedPoint = e.getPoint(); // Store click position
+            }
+        });
+
+        header1.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (pressedPoint != null) {
+                    // Calculate new window position
+                    int x = getLocation().x + e.getX() - pressedPoint.x;
+                    int y = getLocation().y + e.getY() - pressedPoint.y;
+                    setLocation(x, y); // Move frame
+                }
+            }
+        });
 
         // Initialize all panels
         mayorPanel = new MayorPanel();
