@@ -1,6 +1,7 @@
 package userGUIcomponent;
 
 import EmpowerVoteClient.LanguageManager;
+import java.awt.Color;
 /**
  * MayorPanel class provides the election interface for the Mayor race.
  */
@@ -21,6 +22,7 @@ public class MayorPanel extends javax.swing.JPanel implements LanguageManager.La
         initComponents();
         LanguageManager.getInstance().addListener(this); // Register for language changes
         updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
+        setBackground(Color.WHITE); // Set background color
     } // End MayorPanel constructor
 
     /**
