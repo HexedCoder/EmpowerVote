@@ -2,6 +2,7 @@ package AdminGUI.adminGUIcomponent;
 
 import javax.swing.JLabel;
 import EmpowerVoteClient.LanguageManager;
+import java.awt.Color;
 
 /**
  * A panel for displaying City Council election candidates and their vote counts.
@@ -30,6 +31,7 @@ public class CouncilPanel extends javax.swing.JPanel implements LanguageManager.
      */
     public CouncilPanel() {
         initComponents();
+        setBackground(Color.WHITE); // Set background color
         LanguageManager.getInstance().addListener(this); // Register for language changes
         updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
     } // End constructor
