@@ -204,6 +204,8 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
 
                     serverOut.println(votingString);
                     cmd.setEnabled(false);
+                    //Block pane and give exit message
+                    congratsPanel.setVisible(true);
                 } else {
                     cmd.setText(voteThenSubmitText[language]);
                 }
