@@ -2,6 +2,7 @@ package AdminGUI.adminGUIcomponent;
 
 import EmpowerVoteClient.LanguageManager;
 import javax.swing.JLabel;
+import java.awt.Color;
 
 /**
  * A panel for displaying Congress election candidates and their vote counts.
@@ -30,6 +31,7 @@ public class CongressPanel extends javax.swing.JPanel implements LanguageManager
      */
     public CongressPanel() {
         initComponents();
+        setBackground(Color.WHITE); // Set background color
         LanguageManager.getInstance().addListener(this); // Register for language changes
         updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
     } // End constructor
