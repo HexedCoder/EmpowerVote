@@ -20,6 +20,7 @@ public class SenatorPanel extends JPanel implements LanguageManager.LanguageChan
     private ButtonGroup buttonGroup1;
     private JLabel jLabel1;
 
+
     /**
      * Creates new form SenatorPanel
      */

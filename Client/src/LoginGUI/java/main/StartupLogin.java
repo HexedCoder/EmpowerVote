@@ -1,5 +1,6 @@
 package LoginGUI.java.main;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -9,7 +10,6 @@ import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.net.Socket;
 import java.text.DecimalFormat;
-import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -48,6 +48,8 @@ public class StartupLogin extends javax.swing.JFrame {
     public static PrintWriter serverOut;
     private static ClientSocketHandler socketHandler;
     private Point pressedPoint; // Stores initial click position
+    private javax.swing.JComponent header1 = new javax.swing.JComponent() {
+    };
 
     private javax.swing.JLayeredPane background;
 

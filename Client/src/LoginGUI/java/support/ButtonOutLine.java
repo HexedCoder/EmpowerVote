@@ -1,10 +1,6 @@
 package LoginGUI.java.support;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
 
