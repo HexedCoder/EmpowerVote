@@ -12,6 +12,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import AdminGUI.adminGUIsupport.RippleEffect;
 import AdminGUI.adminGUIsupport.ShadowRenderer;
+import java.awt.Font;
 
 /**
  * Represents a menu item that can be added to the menu.
@@ -134,6 +135,10 @@ public class MenuItem extends JButton {
         this.index = index;
         this.subMenuAble = subMenuAble;
         setContentAreaFilled(false);
+
+        // Increase text size for better readability
+        setFont(new Font("sansserif", Font.BOLD, 13)); // Larger font size
+        
         setForeground(new Color(230, 230, 230));
         setHorizontalAlignment(SwingConstants.LEFT);
         setBorder(new EmptyBorder(9, 10, 9, 10));
@@ -165,7 +170,7 @@ public class MenuItem extends JButton {
         this.subMenuIndex = subMenuIndex;
         this.length = length;
         setBorder(new EmptyBorder(9, 33, 9, 10));
-        setBackground(new Color(89, 135, 179));
+        setBackground(new Color(53,90,125)); //updated color for contrast 
         setOpaque(true);
     } // End initSubMenu
 
