@@ -36,6 +36,7 @@ public class Menu extends JComponent implements LanguageManager.LanguageChangeLi
         cmdExit = new JButton();
         cmdExit.setForeground(new Color(250,250,250));
         cmdExit.setFont(new Font("sansserif", 1, 20));
+        cmdExit.setBackground(new Color(0,56,122)); // Blue background for visibility
         cmdExit.setContentAreaFilled(false);
         cmdExit.setCursor(new Cursor(Cursor.HAND_CURSOR));
         cmdExit.addActionListener(e -> System.exit(0));
