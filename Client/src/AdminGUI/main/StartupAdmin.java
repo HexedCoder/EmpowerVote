@@ -20,6 +20,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 
 /**
  * Main class for the admin startup interface.
@@ -48,6 +52,8 @@ public class StartupAdmin extends javax.swing.JFrame {
     // Socket Variables
     private PrintWriter serverOut;
 
+    private Point pressedPoint; // Stores initial click position
+
     /**
      * Constructor for StartupAdmin.
      * Initializes the components and sets up the socket connection.
@@ -64,6 +70,27 @@ public class StartupAdmin extends javax.swing.JFrame {
         }
 
         initComponents();
+
+        // Make frame draggable by pressing and dragging the header
+        header1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                pressedPoint = e.getPoint(); // Store click position
+            }
+        });
+
+        header1.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (pressedPoint != null) {
+                    // Calculate new window position
+                    int x = getLocation().x + e.getX() - pressedPoint.x;
+                    int y = getLocation().y + e.getY() - pressedPoint.y;
+                    setLocation(x, y); // Move frame
+                }
+            }
+        });
+
 
         // Initialize all panels
         mayorPanel = new MayorPanel();
