@@ -130,6 +130,7 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
             }
     };
     private int language;
+    private Boolean validSelection = false;
 
     // jLabels
     private javax.swing.JLabel jLabel1;
@@ -173,6 +174,7 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
         back.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                validSelection = false;
                 areYouSure.setVisible(false);
             }
         });
@@ -188,6 +190,7 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
         confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                validSelection = true;
                 areYouSure.setVisible(false);
             }
         });
@@ -285,7 +288,7 @@ public class ReviewAndSubmit extends javax.swing.JPanel {
             return false;
         }
         areYouSure.setVisible(true);
-        return true;
+        return validSelection;
     } // End submitResults
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

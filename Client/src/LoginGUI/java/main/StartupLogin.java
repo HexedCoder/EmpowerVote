@@ -161,6 +161,7 @@ public class StartupLogin extends javax.swing.JFrame {
                     case AUTHENTICATED_ADMIN -> {
                         loginAndRegister.setLoginMessage("Admin Login successful!", true);
                         loginAndRegister.disableLoginButton();
+                        loginAndRegister.disableRegisterButton();
                         StringBuilder voteStats = new StringBuilder();
 
                         // send VIEW_VOTES command to server
@@ -183,6 +184,7 @@ public class StartupLogin extends javax.swing.JFrame {
                     case AUTHENTICATED_USER -> {
                         loginAndRegister.setLoginMessage("User Login successful!", true);
                         loginAndRegister.disableLoginButton();
+                        loginAndRegister.disableRegisterButton();
                         StringBuilder userStats = new StringBuilder();
 
                         socketHandler.sendMessage("VOTE");
