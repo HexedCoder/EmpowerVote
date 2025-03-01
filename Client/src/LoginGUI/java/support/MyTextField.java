@@ -138,7 +138,7 @@ public class MyTextField extends JTextField {
             ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             Insets ins = getInsets();
             FontMetrics fm = g.getFontMetrics();
-            g.setColor(new Color(200, 200, 200)); // Hint text color
+            g.setColor(new Color(70,70,70)); // Hint text color
             g.drawString(hint, ins.left, h / 2 + fm.getAscent() / 2 - 2); // Draw hint text
         }
     } // paint
