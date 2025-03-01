@@ -1,6 +1,7 @@
 package userGUIcomponent;
 
 import EmpowerVoteClient.LanguageManager;
+import java.awt.Color;
 /**
  * DefaultPanel class provides a welcome message and instructions for users
  * on how to navigate the voting system.
@@ -17,6 +18,7 @@ public class DefaultPanel extends javax.swing.JPanel implements LanguageManager.
         initComponents();
         LanguageManager.getInstance().addListener(this); // Register for language updates
         updateText(LanguageManager.getInstance().getLanguageIndex()); // Set initial text
+        setBackground(Color.WHITE); // Set background color
     } // End constructor
 
     private void updateText(int languageIndex) {
