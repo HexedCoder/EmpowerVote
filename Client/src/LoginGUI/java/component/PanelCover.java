@@ -3,10 +3,12 @@ package LoginGUI.java.component;
 import EmpowerVoteClient.LanguageManager;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.LinearGradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -77,7 +79,7 @@ public class PanelCover extends javax.swing.JPanel {
                 event.actionPerformed(e);
             }
         });
-        add(button, "w 60%, h 40");
+        add(button, "w 65%, h 45");
 
         //-------------------------------------------------
         // language drop down here
@@ -87,17 +89,17 @@ public class PanelCover extends javax.swing.JPanel {
 
         // Customize the ComboBox appearance
         comboBox.setFont(new Font("sansserif", 1, 12)); // Set font size
-        comboBox.setBorder(BorderFactory.createLineBorder(new Color(100,100,100), 1)); // Add a black outline
+        comboBox.setBorder(BorderFactory.createLineBorder(new Color(0,0,0), 1)); // Add a black outline
         comboBox.setOpaque(false); // Make the combo box non-opaque
         comboBox.setBackground(new Color(0, 0, 0, 0)); // Set fully transparent background
-        comboBox.setForeground(new Color(100,100,100)); // Set text color
+        comboBox.setForeground(new Color(0,0,0)); // Set text color
         comboBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
         // Custom cell renderer for dropdown to make it transparent
         comboBox.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                label.setForeground(new Color(100,100,100)); // Set text color to white
+                label.setForeground(new Color(0,0,0)); // Set text color to white
                 return label;
             }
         });
@@ -110,16 +112,19 @@ public class PanelCover extends javax.swing.JPanel {
             
         });
 
-        add(comboBox, "w 30%, h 8");
+        add(comboBox, "w 40%, h 10");
         //=================================================
         //-------------------------------------------------
         //-------------------------------------------------
         // Exit button
         //==================================================
         cmdExit = new JButton("Exit");
-        cmdExit.setForeground(new Color(100,100,100));
-        cmdExit.setFont(new Font("sansserif", 1, 12));
-        cmdExit.setContentAreaFilled(false);
+        cmdExit.setFont(new Font("sansserif", Font.BOLD, 14)); // Bigger text
+        cmdExit.setForeground(new Color(0,0,0)); // Text color (black)
+        cmdExit.setPreferredSize(new Dimension(140, 35)); // Bigger button
+        cmdExit.setMargin(new Insets(10, 20, 10, 20)); // More padding
+        cmdExit.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0), 2)); // Thicker border
+        cmdExit.setContentAreaFilled(false); // Transparent background
         cmdExit.setCursor(new Cursor(Cursor.HAND_CURSOR));
         cmdExit.addActionListener(e -> System.exit(0));
         add(cmdExit);
