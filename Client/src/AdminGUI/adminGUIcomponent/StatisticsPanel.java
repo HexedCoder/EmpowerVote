@@ -12,7 +12,7 @@ import javax.swing.JPanel;
  * and a PolarAreaChart to display results in chart form.
  */
 public class StatisticsPanel extends javax.swing.JPanel implements LanguageManager.LanguageChangeListener {
-    
+
     // Panel variables
     private MayorPanel mayorPanel;
     private CouncilPanel councilPanel;
@@ -33,7 +33,7 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
     private javax.swing.JButton congressButton;
 
     // Stores the current chart title for language updates
-    private String currentChartTitle = ""; 
+    private String currentChartTitle = "";
 
     /**
      * Constructor to initialize the components and register for language updates.
@@ -107,7 +107,7 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
      */
     private void setChartData(String title, Object panel) {
         polarAreaChart1.clear();
-        
+
         if (panel instanceof MayorPanel) {
             MayorPanel p = (MayorPanel) panel;
             polarAreaChart1.addItem(new ModelPolarArea(new Color(170,45,45), p.getCandidate1(), p.getCandidate1Votes()));
@@ -185,7 +185,7 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
     private void initComponents() {
 
         mayorButton = new javax.swing.JButton();
-        polarAreaChart1 = new AdminGUI.java.adminGUIchart.PolarAreaChart1();
+        polarAreaChart1 = new AdminGUI.adminGUIchart.PolarAreaChart1();
         councilButton = new javax.swing.JButton();
         governorButton = new javax.swing.JButton();
         presidentButton = new javax.swing.JButton();
@@ -273,13 +273,13 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         setLayout(new BorderLayout(10, 10)); // 10px spacing
         add(polarAreaChart1, BorderLayout.CENTER); // Chart in the center
         add(buttonPanel, BorderLayout.SOUTH); // Buttons at the bottom
-    } 
+    }
     // </editor-fold>//GEN-END:initComponents
 
 
     private void formMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseEntered
-       
-        
+
+
     }//GEN-LAST:event_formMouseEntered
 
     private void mayorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mayorButtonActionPerformed
@@ -291,9 +291,9 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         // Use the button text (already translated) for the chart title.
         polarAreaChart1.setTitle(mayorButton.getText());
         currentChartTitle = mayorButton.getText();
-        
+
         polarAreaChart1.start();
-        
+
     }//GEN-LAST:event_mayorButtonActionPerformed
 
     private void councilButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_councilButtonActionPerformed
@@ -305,7 +305,7 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         // Use the button text (already translated) for the chart title.
         polarAreaChart1.setTitle(councilButton.getText());
         currentChartTitle = councilButton.getText();
-        
+
         polarAreaChart1.start();
     }//GEN-LAST:event_councilButtonActionPerformed
 
@@ -318,7 +318,7 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         // Use the button text (already translated) for the chart title.
         polarAreaChart1.setTitle(governorButton.getText());
         currentChartTitle = governorButton.getText();
-        
+
         polarAreaChart1.start();
     }//GEN-LAST:event_governorButtonActionPerformed
 
@@ -331,7 +331,7 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         // Use the button text (already translated) for the chart title.
         polarAreaChart1.setTitle(presidentButton.getText());
         currentChartTitle = presidentButton.getText();
-        
+
         polarAreaChart1.start();
     }//GEN-LAST:event_presidentButtonActionPerformed
 
@@ -344,9 +344,15 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         // Use the button text (already translated) for the chart title.
         polarAreaChart1.setTitle(congressButton.getText());
         currentChartTitle = congressButton.getText();
-        
+
         polarAreaChart1.start();
     }//GEN-LAST:event_congressButtonActionPerformed
+
+    @Override
+    public void onLanguageChange(int newIndex) {
+        // Call the updateText method to update UI based on the selected language index
+        updateText(newIndex);
+    }
 
     private void senatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_senatorButtonActionPerformed
         polarAreaChart1.clear();
@@ -357,7 +363,7 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         // Use the button text (already translated) for the chart title.
         polarAreaChart1.setTitle(senatorButton.getText());
         currentChartTitle = senatorButton.getText();
-        
+
         polarAreaChart1.start();
-    }//GEN-LAST:event_senatorButtonActionPerformed
+    }//GEN-LAST:event_senatorButtonActio`nPerformed
 } // End StatisticsPanel
