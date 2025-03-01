@@ -36,8 +36,9 @@ public class Menu extends JComponent implements LanguageManager.LanguageChangeLi
         // Initialize the exit button BEFORE updating menu items
         cmdExit = new JButton();
         cmdExit.setForeground(new Color(250,250,250));
+        cmdExit.setBackground(new Color(200, 0, 0)); // Red background for visibility
         cmdExit.setFont(new Font("sansserif", Font.BOLD, 20));
-        cmdExit.setContentAreaFilled(false);
+        cmdExit.setContentAreaFilled(true);
         cmdExit.setCursor(new Cursor(Cursor.HAND_CURSOR));
         cmdExit.addActionListener(e -> System.exit(0));
 
@@ -150,7 +151,7 @@ public class Menu extends JComponent implements LanguageManager.LanguageChangeLi
     @Override
     protected void paintComponent(Graphics grphcs){
         Graphics2D g2 = (Graphics2D) grphcs.create();
-        g2.setColor(new Color(30,95,156));
+        g2.setColor(new Color(0,56,122));
         g2.fill(new Rectangle2D.Double(0, 0, getWidth(), getHeight()));
         super.paintComponent(grphcs);
     }
