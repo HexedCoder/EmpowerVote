@@ -2,6 +2,7 @@ package AdminGUI.adminGUIcomponent;
 
 import EmpowerVoteClient.LanguageManager;
 import javax.swing.JLabel;
+import java.awt.Color;
 
 /**
  * A panel displaying a welcome message and instructions for the EmpowerVote Admin.
@@ -21,6 +22,7 @@ public class DefaultPanel extends javax.swing.JPanel implements LanguageManager.
         initComponents();
         LanguageManager.getInstance().addListener(this); // Register for language updates
         updateText(LanguageManager.getInstance().getLanguageIndex()); // Set initial text
+        setBackground(Color.WHITE); // Set background color
     } // End constructor
 
     private void updateText(int languageIndex) {
