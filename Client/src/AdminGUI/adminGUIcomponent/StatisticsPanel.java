@@ -60,6 +60,9 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
             { "Мэр", "Городской совет", "Губернатор", "Сенатор", "Президент", "Конгресс" }
         };
 
+        // Default chart title translations.
+        String[] defaultChartTitles = { "Elections", "Elecciones", "Выборы" };
+
         // Update button text
         mayorButton.setText(texts[languageIndex][0]);
         councilButton.setText(texts[languageIndex][1]);
@@ -68,25 +71,32 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         presidentButton.setText(texts[languageIndex][4]);
         congressButton.setText(texts[languageIndex][5]);
 
-        // Translate the chart title if it matches one of the predefined titles
+        // Update the chart title.
+        // If a chart title has been set and it matches one of our predefined button texts, translate it.
         if (!currentChartTitle.isEmpty()) {
+            int index = -1;
             for (int i = 0; i < texts[0].length; i++) {
-                if (currentChartTitle.equals(texts[0][i])) {
-                    polarAreaChart1.setTitle(texts[languageIndex][i]);
+                if (currentChartTitle.equals(texts[0][i]) ||
+                    currentChartTitle.equals(texts[1][i]) ||
+                    currentChartTitle.equals(texts[2][i])) {
+                    index = i;
                     break;
                 }
             }
-        }
-    } // End updateText
-
-    /**
-     * Handles language change event and updates the UI accordingly.
-     *
-     * @param newIndex The new language index.
-     */
-    @Override
-    public void onLanguageChange(int newIndex) {
-        updateText(newIndex);
+        if (index != -1) {
+            polarAreaChart1.setTitle(texts[languageIndex][index]);
+            currentChartTitle = texts[languageIndex][index]; // update stored title
+        } else {
+            // If the current title doesn't match any button title,
+            // assume it's the default "Elections" and update accordingly.
+            polarAreaChart1.setTitle(defaultChartTitles[languageIndex]);
+            currentChartTitle = defaultChartTitles[languageIndex];
+            }
+        } else {
+            // No chart title has been set yet, so set the default title.
+            polarAreaChart1.setTitle(defaultChartTitles[languageIndex]);
+            currentChartTitle = defaultChartTitles[languageIndex];
+            }
     } // End onLanguageChange
 
     /**
@@ -278,6 +288,10 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         polarAreaChart1.addItem(new ModelPolarArea(new Color(190,135,135), mayorPanel.getCandidate2(), mayorPanel.getCandidate2Votes()));
         polarAreaChart1.addItem(new ModelPolarArea(new Color(90,4,4), mayorPanel.getCandidate3(), mayorPanel.getCandidate3Votes()));
         polarAreaChart1.setTitle("Mayor");
+        // Use the button text (already translated) for the chart title.
+        polarAreaChart1.setTitle(mayorButton.getText());
+        currentChartTitle = mayorButton.getText();
+        
         polarAreaChart1.start();
         
     }//GEN-LAST:event_mayorButtonActionPerformed
@@ -288,6 +302,10 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         polarAreaChart1.addItem(new ModelPolarArea(new Color(114,118,195), councilPanel.getCandidate2(), councilPanel.getCandidate2Votes()));
         polarAreaChart1.addItem(new ModelPolarArea(new Color(87,218,237), councilPanel.getCandidate3(), councilPanel.getCandidate3Votes()));
         polarAreaChart1.setTitle("City Council");
+        // Use the button text (already translated) for the chart title.
+        polarAreaChart1.setTitle(councilButton.getText());
+        currentChartTitle = councilButton.getText();
+        
         polarAreaChart1.start();
     }//GEN-LAST:event_councilButtonActionPerformed
 
@@ -297,6 +315,10 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         polarAreaChart1.addItem(new ModelPolarArea(new Color(110,180,115), governorPanel.getCandidate2(), governorPanel.getCandidate2Votes()));
         polarAreaChart1.addItem(new ModelPolarArea(new Color(10,82,17), governorPanel.getCandidate3(), governorPanel.getCandidate3Votes()));
         polarAreaChart1.setTitle("Governor");
+        // Use the button text (already translated) for the chart title.
+        polarAreaChart1.setTitle(governorButton.getText());
+        currentChartTitle = governorButton.getText();
+        
         polarAreaChart1.start();
     }//GEN-LAST:event_governorButtonActionPerformed
 
@@ -306,6 +328,10 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         polarAreaChart1.addItem(new ModelPolarArea(new Color(163,128,21), presidentPanel.getCandidate2(), presidentPanel.getCandidate2Votes()));
         polarAreaChart1.addItem(new ModelPolarArea(new Color(214,194,135), presidentPanel.getCandidate3(), presidentPanel.getCandidate3Votes()));
         polarAreaChart1.setTitle("President");
+        // Use the button text (already translated) for the chart title.
+        polarAreaChart1.setTitle(presidentButton.getText());
+        currentChartTitle = presidentButton.getText();
+        
         polarAreaChart1.start();
     }//GEN-LAST:event_presidentButtonActionPerformed
 
@@ -315,6 +341,10 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         polarAreaChart1.addItem(new ModelPolarArea(new Color(21,190,209), congressPanel.getCandidate2(), congressPanel.getCandidate2Votes()));
         polarAreaChart1.addItem(new ModelPolarArea(new Color(148,203,209), congressPanel.getCandidate3(), congressPanel.getCandidate3Votes()));
         polarAreaChart1.setTitle("Congress");
+        // Use the button text (already translated) for the chart title.
+        polarAreaChart1.setTitle(congressButton.getText());
+        currentChartTitle = congressButton.getText();
+        
         polarAreaChart1.start();
     }//GEN-LAST:event_congressButtonActionPerformed
 
@@ -324,6 +354,10 @@ public class StatisticsPanel extends javax.swing.JPanel implements LanguageManag
         polarAreaChart1.addItem(new ModelPolarArea(new Color(175,67,237), senatorPanel.getCandidate2(), senatorPanel.getCandidate2Votes()));
         polarAreaChart1.addItem(new ModelPolarArea(new Color(184,134,209), senatorPanel.getCandidate3(), senatorPanel.getCandidate3Votes()));
         polarAreaChart1.setTitle("Senator");
+        // Use the button text (already translated) for the chart title.
+        polarAreaChart1.setTitle(senatorButton.getText());
+        currentChartTitle = senatorButton.getText();
+        
         polarAreaChart1.start();
     }//GEN-LAST:event_senatorButtonActionPerformed
 } // End StatisticsPanel
