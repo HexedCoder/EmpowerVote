@@ -80,7 +80,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         cmdRegister.setBackground(new Color(30, 95, 156));
         cmdRegister.setForeground(new Color(250, 250, 250));
         cmdRegister.setText("Register");
-        register.add(cmdRegister, "w 40%, h 40");
+        register.add(cmdRegister, "w 50%, h 50");
         
         // Listen for language changes
         LanguageManager.getInstance().addListener(index -> updateLanguage(index, label, txtRegister, txtRegisterPass, cmdRegister, false));
@@ -122,7 +122,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         cmdLogin.setBackground(new Color(30, 95, 156));
         cmdLogin.setForeground(new Color(250, 250, 250));
         cmdLogin.setText("Sign In");
-        login.add(cmdLogin, "w 40%, h 40");
+        login.add(cmdLogin, "w 50%, h 50");
         
         // Listen for language changes
         LanguageManager.getInstance().addListener(index -> updateLanguage(index, label, txtLogin, txtLoginPass, cmdLogin, true));
