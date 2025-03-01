@@ -1,6 +1,7 @@
 package AdminGUI.adminGUIcomponent;
 
 import EmpowerVoteClient.LanguageManager;
+import java.awt.Color;
 /**
  * A panel that displays the candidates and their respective vote counts for the President election.
  */
@@ -30,6 +31,7 @@ public class PresidentPanel extends javax.swing.JPanel implements LanguageManage
         initComponents();
         LanguageManager.getInstance().addListener(this); // Register for language changes
         updateTitle(LanguageManager.getInstance().getLanguageIndex()); // Set title on initialization
+        setBackground(Color.WHITE); // Set background color
     } // End PresidentPanel
 
     /**
